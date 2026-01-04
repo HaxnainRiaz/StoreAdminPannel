@@ -15,7 +15,8 @@ import {
     TicketPercent,
     LifeBuoy,
     ClipboardList,
-    Box
+    Box,
+    Layers
 } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
@@ -28,6 +29,7 @@ const Sidebar = () => {
     const navItems = [
         { label: "Dashboard", href: "/", icon: LayoutDashboard },
         { label: "Products", href: "/products", icon: Package },
+        { label: "Categories", href: "/categories", icon: Layers },
         { label: "Orders", href: "/orders", icon: ShoppingBag },
         { label: "Inventory", href: "/inventory", icon: Box },
         { label: "User Accounts", href: "/customers", icon: Users },

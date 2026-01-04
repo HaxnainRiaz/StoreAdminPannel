@@ -11,12 +11,12 @@ export default function LoginPage() {
     const [error, setError] = useState("");
     const { login } = useAuth();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setError("");
-        const success = login(email, password);
-        if (!success) {
-            setError("Invalid credentials. Please use the demo login.");
+        const result = await login(email, password);
+        if (!result.success) {
+            setError(result.message);
         }
     };
 

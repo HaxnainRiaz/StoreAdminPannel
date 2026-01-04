@@ -9,7 +9,7 @@ const ProductTable = ({ products, onEdit, onDelete }) => {
 
     const toggleSelectAll = (e) => {
         if (e.target.checked) {
-            setSelectedProducts(products.map(p => p.id));
+            setSelectedProducts(products.map(p => p._id));
         } else {
             setSelectedProducts([]);
         }
@@ -77,12 +77,12 @@ const ProductTable = ({ products, onEdit, onDelete }) => {
                     </thead>
                     <tbody className="divide-y divide-neutral-beige">
                         {products.map((product) => (
-                            <tr key={product.id} className={`group hover:bg-neutral-cream transition-all duration-300 ${selectedProducts.includes(product.id) ? 'bg-secondary/5' : ''}`}>
+                            <tr key={product._id} className={`group hover:bg-neutral-cream transition-all duration-300 ${selectedProducts.includes(product._id) ? 'bg-secondary/5' : ''}`}>
                                 <td className="px-6 py-5">
                                     <input
                                         type="checkbox"
-                                        checked={selectedProducts.includes(product.id)}
-                                        onChange={() => toggleSelect(product.id)}
+                                        checked={selectedProducts.includes(product._id)}
+                                        onChange={() => toggleSelect(product._id)}
                                         className="w-4 h-4 rounded border-neutral-300 text-primary focus:ring-primary cursor-pointer"
                                     />
                                 </td>
@@ -90,21 +90,21 @@ const ProductTable = ({ products, onEdit, onDelete }) => {
                                     <div className="flex items-center gap-4">
                                         <div className="w-14 h-14 relative rounded-xl overflow-hidden bg-neutral-100 shrink-0 border border-neutral-beige/50 group-hover:shadow-md transition-shadow">
                                             <Image
-                                                src={product.image}
-                                                alt={product.name}
+                                                src={product.images[0]}
+                                                alt={product.title}
                                                 fill
                                                 className="object-cover transition-transform duration-500 group-hover:scale-110"
                                             />
                                         </div>
                                         <div>
-                                            <p className="font-heading font-bold text-primary group-hover:text-secondary-dark transition-colors">{product.name}</p>
-                                            <p className="text-xs text-neutral-gray mt-0.5 font-medium">SKU-{product.id + 1000}</p>
+                                            <p className="font-heading font-bold text-primary group-hover:text-secondary-dark transition-colors">{product.title}</p>
+                                            <p className="text-xs text-neutral-gray mt-0.5 font-medium">SKU-{product._id.toString().substring(0, 6)}</p>
                                         </div>
                                     </div>
                                 </td>
                                 <td className="px-6 py-5">
-                                    <span className="text-sm font-medium text-neutral-gray bg-neutral-100 px-2 py-1 rounded-md">
-                                        {product.category}
+                                    <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 bg-neutral-50 px-3 py-1 rounded-full border border-neutral-100">
+                                        {product.category?.name || "No Category"}
                                     </span>
                                 </td>
                                 <td className="px-6 py-5">
@@ -146,7 +146,7 @@ const ProductTable = ({ products, onEdit, onDelete }) => {
                                             <Edit size={18} />
                                         </button>
                                         <button
-                                            onClick={() => onDelete(product.id)}
+                                            onClick={() => onDelete(product._id)}
                                             className="p-2 text-neutral-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
                                             title="Delete Product"
                                         >

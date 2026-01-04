@@ -190,10 +190,37 @@ export const AdminProvider = ({ children }) => {
     // 10. Admin User Session (Simulated)
     const [currentUser, setCurrentUser] = useState({
         name: "Hasnain",
-        role: "super-admin", // super-admin, admin, editor, support
+        role: "super-admin",
         email: "admin@luminelle.com",
         avatar: "https://ui-avatars.com/api/?name=Hasnain&background=0B2F26&color=fff"
     });
+
+    // --- PERSISTENCE ---
+    useEffect(() => {
+        const loadSavedData = () => {
+            const savedProducts = localStorage.getItem('luminelle_products');
+            if (savedProducts) setProducts(JSON.parse(savedProducts));
+
+            const savedCms = localStorage.getItem('luminelle_cms');
+            if (savedCms) setCms(JSON.parse(savedCms));
+
+            const savedDiscounts = localStorage.getItem('luminelle_discounts');
+            if (savedDiscounts) setDiscounts(JSON.parse(savedDiscounts));
+        };
+        loadSavedData();
+    }, []);
+
+    useEffect(() => {
+        localStorage.setItem('luminelle_products', JSON.stringify(products));
+    }, [products]);
+
+    useEffect(() => {
+        localStorage.setItem('luminelle_cms', JSON.stringify(cms));
+    }, [cms]);
+
+    useEffect(() => {
+        localStorage.setItem('luminelle_discounts', JSON.stringify(discounts));
+    }, [discounts]);
 
     // --- HELPER FOR AUDIT ---
     const logAction = (action, details) => {

@@ -15,13 +15,27 @@ export default function AdminDashboard() {
 
     return (
         <div className="space-y-8">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-heading font-bold text-primary">Dashboard</h1>
-                    <p className="text-neutral-gray mt-1">Welcome back, Admin</p>
+                    <h1 className="text-4xl font-heading font-bold text-primary mb-1">Estate Overview</h1>
+                    <div className="flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                        <p className="text-neutral-gray text-sm font-medium">Store Sync Active • <span className="text-primary font-bold">Luminelle Core v2.0</span></p>
+                    </div>
                 </div>
-                <div className="text-sm text-neutral-500">
-                    {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+
+                <div className="flex items-center gap-3">
+                    <a
+                        href="http://localhost:3000" // Simulating the store link
+                        target="_blank"
+                        className="flex items-center gap-2 bg-white border border-neutral-beige text-primary px-4 py-2.5 rounded-xl hover:bg-neutral-50 transition-all shadow-sm font-bold text-sm"
+                    >
+                        View Live Store
+                    </a>
+                    <div className="bg-white px-4 py-2.5 rounded-xl border border-neutral-beige shadow-sm flex items-center gap-2">
+                        <span className="text-xs font-bold text-neutral-400">SESSION:</span>
+                        <span className="text-xs font-bold text-primary tracking-widest">A-X992</span>
+                    </div>
                 </div>
             </div>
 

@@ -18,6 +18,7 @@ import {
     Box
 } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "@/context/AuthContext";
 
 const Sidebar = () => {
     const pathname = usePathname();
@@ -25,12 +26,11 @@ const Sidebar = () => {
     const { user, logout } = useAuth();
 
     const navItems = [
-        // ... (omitting for brevity in target search, will include in actual replacement)
         { label: "Dashboard", href: "/", icon: LayoutDashboard },
         { label: "Products", href: "/products", icon: Package },
         { label: "Orders", href: "/orders", icon: ShoppingBag },
         { label: "Inventory", href: "/inventory", icon: Box },
-        { label: "Customers", href: "/customers", icon: Users },
+        { label: "User Accounts", href: "/customers", icon: Users },
         { label: "Reviews", href: "/reviews", icon: Star },
         { label: "Discounts", href: "/discounts", icon: TicketPercent },
         { label: "Support", href: "/support", icon: LifeBuoy },
@@ -80,7 +80,7 @@ const Sidebar = () => {
                                 className={`
                                     flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-300 group
                                     ${isActive(item.href)
-                                        ? "bg-secondary text-primary font-bold shadow-[0_4px_15px_rgba(209,191,163,0.35)] scale-[1.02]"
+                                        ? "bg-secondary text-primary font-bold shadow-[0_4px_15_rgba(209,191,163,0.35)] scale-[1.02]"
                                         : "text-neutral-beige/70 hover:bg-white/5 hover:text-white"
                                     }
                                 `}
@@ -94,14 +94,17 @@ const Sidebar = () => {
                     <div className="pt-6 border-t border-white/10 mt-6 pb-2">
                         <div className="flex items-center gap-3 px-4 mb-6">
                             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-secondary to-secondary-dark flex items-center justify-center text-primary font-bold text-sm shadow-inner overflow-hidden border border-white/20">
-                                <img src="https://ui-avatars.com/api/?name=Hasnain&background=D1BFA3&color=0B2F26" alt="Admin" />
+                                <img src={user?.avatar || "https://ui-avatars.com/api/?name=Admin"} alt="Admin" />
                             </div>
                             <div className="flex-1 min-w-0">
-                                <p className="text-sm font-bold text-white truncate">Hasnain</p>
-                                <p className="text-[10px] font-bold text-secondary uppercase tracking-widest opacity-80">Director</p>
+                                <p className="text-sm font-bold text-white truncate">{user?.name || "Admin"}</p>
+                                <p className="text-[10px] font-bold text-secondary uppercase tracking-widest opacity-80">{user?.role || "Manager"}</p>
                             </div>
                         </div>
-                        <button className="flex items-center gap-3 w-full px-4 py-3 text-neutral-beige/50 hover:text-red-400 hover:bg-red-500/10 rounded-xl transition-all duration-300 group">
+                        <button
+                            onClick={logout}
+                            className="flex items-center gap-3 w-full px-4 py-3 text-neutral-beige/50 hover:text-red-400 hover:bg-red-500/10 rounded-xl transition-all duration-300 group"
+                        >
                             <LogOut size={18} className="group-hover:rotate-12 transition-transform" />
                             <span className="text-sm font-bold tracking-wide">Sign Out</span>
                         </button>

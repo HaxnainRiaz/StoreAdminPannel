@@ -63,12 +63,16 @@ export const ProtectedRoute = ({ children }) => {
         }
     }, [user, loading, router, pathname]);
 
-    if (loading || (!user && pathname !== "/login")) {
+    if (loading) {
         return (
             <div className="min-h-screen bg-neutral-cream flex items-center justify-center">
                 <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
             </div>
         );
+    }
+
+    if (!user && pathname !== "/login") {
+        return null; // Prevent rendering anything while redirecting
     }
 
     return children;

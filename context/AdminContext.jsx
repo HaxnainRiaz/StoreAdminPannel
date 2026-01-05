@@ -27,9 +27,11 @@ export const AdminProvider = ({ children }) => {
     const [supportTickets, setSupportTickets] = useState([]);
     const [newsletter, setNewsletter] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     const fetchData = useCallback(async () => {
         setLoading(true);
+        setError(null);
         try {
             const token = localStorage.getItem('token');
             const config = {
@@ -37,10 +39,10 @@ export const AdminProvider = ({ children }) => {
             };
 
             const publicFetch = [
-                fetch(`${API_URL}/products`),
-                fetch(`${API_URL}/categories`),
-                fetch(`${API_URL}/banners`),
-                fetch(`${API_URL}/settings`)
+                fetch(`${API_URL}/products`, { cache: 'no-store' }),
+                fetch(`${API_URL}/categories`, { cache: 'no-store' }),
+                fetch(`${API_URL}/banners`, { cache: 'no-store' }),
+                fetch(`${API_URL}/settings`, { cache: 'no-store' })
             ];
 
             const [resProd, resCat, resBan, resSet] = await Promise.all(publicFetch);
@@ -99,6 +101,7 @@ export const AdminProvider = ({ children }) => {
             setLoading(false);
         } catch (error) {
             console.error("Error fetching admin data:", error);
+            setError(error.message);
             setLoading(false);
         }
     }, []);
@@ -203,7 +206,7 @@ export const AdminProvider = ({ children }) => {
                 addProduct, updateProduct, deleteProduct, addCategory,
                 updateOrderStatus, updateReview, updateSettings, addBanner,
                 deleteBanner, updateTicket, addCoupon, deleteCoupon,
-                loading, refreshData: fetchData
+                loading, error, refreshData: fetchData
             }}
         >
             {children}

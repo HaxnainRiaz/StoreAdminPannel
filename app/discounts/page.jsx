@@ -12,8 +12,8 @@ export default function DiscountsPage() {
     const [newDiscount, setNewDiscount] = useState({
         code: "",
         discountType: "percentage",
-        value: "",
-        minimumSpend: "",
+        discountValue: "",
+        minAmount: "",
         expiresAt: ""
     });
 
@@ -27,12 +27,12 @@ export default function DiscountsPage() {
         e.preventDefault();
         const success = await addCoupon({
             ...newDiscount,
-            value: Number(newDiscount.value),
-            minimumSpend: Number(newDiscount.minimumSpend || 0)
+            discountValue: Number(newDiscount.discountValue),
+            minAmount: Number(newDiscount.minAmount || 0)
         });
         if (success) {
             setShowModal(false);
-            setNewDiscount({ code: "", discountType: "percentage", value: "", minimumSpend: "", expiresAt: "" });
+            setNewDiscount({ code: "", discountType: "percentage", discountValue: "", minAmount: "", expiresAt: "" });
         }
     };
 
@@ -93,7 +93,7 @@ export default function DiscountsPage() {
                                 <div className="flex items-center gap-2">
                                     <Zap size={14} className="text-secondary" />
                                     <p className="text-neutral-gray text-xs font-bold uppercase tracking-wider">
-                                        {discount.discountType === 'percentage' ? `${discount.value}% Reduction` : `$${discount.value} Credit`}
+                                        {discount.discountType === 'percentage' ? `${discount.discountValue}% Reduction` : `$${discount.discountValue} Credit`}
                                     </p>
                                 </div>
                             </div>
@@ -104,7 +104,7 @@ export default function DiscountsPage() {
                                         <DollarSign size={12} />
                                         <span>Minimum Spend</span>
                                     </div>
-                                    <span className="text-primary">${discount.minimumSpend || 0}</span>
+                                    <span className="text-primary">${discount.minAmount || 0}</span>
                                 </div>
                                 <div className="flex justify-between items-center text-[10px] uppercase font-bold tracking-widest">
                                     <div className="flex items-center gap-2 text-neutral-300">
@@ -180,8 +180,8 @@ export default function DiscountsPage() {
                                     <input
                                         type="number"
                                         required
-                                        value={newDiscount.value}
-                                        onChange={e => setNewDiscount({ ...newDiscount, value: e.target.value })}
+                                        value={newDiscount.discountValue}
+                                        onChange={e => setNewDiscount({ ...newDiscount, discountValue: e.target.value })}
                                         placeholder="30"
                                         className="w-full px-6 py-4 bg-neutral-50 border border-neutral-beige rounded-2xl focus:outline-none focus:ring-4 focus:ring-secondary/10 font-bold text-primary"
                                     />
@@ -191,8 +191,8 @@ export default function DiscountsPage() {
                                     <label className="block text-[10px] font-bold text-primary uppercase tracking-[0.2em] mb-3 ml-2">Min. Valuation Threshold</label>
                                     <input
                                         type="number"
-                                        value={newDiscount.minimumSpend}
-                                        onChange={e => setNewDiscount({ ...newDiscount, minimumSpend: e.target.value })}
+                                        value={newDiscount.minAmount}
+                                        onChange={e => setNewDiscount({ ...newDiscount, minAmount: e.target.value })}
                                         placeholder="150"
                                         className="w-full px-6 py-4 bg-neutral-50 border border-neutral-beige rounded-2xl focus:outline-none focus:ring-4 focus:ring-secondary/10 font-bold text-primary"
                                     />

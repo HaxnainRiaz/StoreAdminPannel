@@ -5,18 +5,18 @@ import { Save, ToggleLeft, ToggleRight, LayoutTemplate, Type, Image as ImageIcon
 import { useState, useEffect } from "react";
 
 export default function CMSPage() {
-    const { cms, updateCmsData, loading } = useAdmin();
-    const [localCms, setLocalCms] = useState(null);
+    const { settings, updateSettings, loading } = useAdmin();
+    const [localSettings, setLocalSettings] = useState(null);
 
     useEffect(() => {
-        if (cms) setLocalCms(JSON.parse(JSON.stringify(cms)));
-    }, [cms]);
+        if (settings) setLocalSettings(JSON.parse(JSON.stringify(settings)));
+    }, [settings]);
 
     const handleSave = async () => {
-        await updateCmsData(localCms);
+        await updateSettings(localSettings);
     };
 
-    if (loading || !localCms) {
+    if (loading || !localSettings) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[50vh]">
                 <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4" />
@@ -57,15 +57,15 @@ export default function CMSPage() {
                             <div className="flex items-center justify-between px-2">
                                 <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">Visibility Status</span>
                                 <button
-                                    onClick={() => setLocalCms({ ...localCms, announcementBar: { ...localCms.announcementBar, enabled: !localCms.announcementBar.enabled } })}
-                                    className={`transition-colors ${localCms.announcementBar.enabled ? "text-secondary" : "text-neutral-200"}`}
+                                    onClick={() => setLocalSettings({ ...localSettings, announcementBar: { ...localSettings.announcementBar, enabled: !localSettings.announcementBar.enabled } })}
+                                    className={`transition-colors ${localSettings.announcementBar?.enabled ? "text-secondary" : "text-neutral-200"}`}
                                 >
-                                    {localCms.announcementBar.enabled ? <ToggleRight size={36} /> : <ToggleLeft size={36} />}
+                                    {localSettings.announcementBar?.enabled ? <ToggleRight size={36} /> : <ToggleLeft size={36} />}
                                 </button>
                             </div>
                             <textarea
-                                value={localCms.announcementBar.text}
-                                onChange={(e) => setLocalCms({ ...localCms, announcementBar: { ...localCms.announcementBar, text: e.target.value } })}
+                                value={localSettings.announcementBar?.text || ""}
+                                onChange={(e) => setLocalSettings({ ...localSettings, announcementBar: { ...localSettings.announcementBar, text: e.target.value } })}
                                 rows={2}
                                 className="w-full p-5 bg-neutral-cream/10 border border-neutral-beige rounded-2xl focus:ring-4 focus:ring-secondary/10 focus:outline-none resize-none font-medium text-primary text-sm shadow-inner italic"
                                 placeholder="Universal announcement text..."
@@ -84,16 +84,16 @@ export default function CMSPage() {
                                 <label className="block text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-2 ml-1">Main Headline</label>
                                 <input
                                     type="text"
-                                    value={localCms.hero.headline}
-                                    onChange={(e) => setLocalCms({ ...localCms, hero: { ...localCms.hero, headline: e.target.value } })}
+                                    value={localSettings.hero?.headline || ""}
+                                    onChange={(e) => setLocalSettings({ ...localSettings, hero: { ...localSettings.hero, headline: e.target.value } })}
                                     className="w-full px-6 py-4 bg-neutral-50 border border-neutral-beige rounded-xl focus:ring-4 focus:ring-secondary/5 focus:outline-none font-bold text-primary text-lg italic"
                                 />
                             </div>
                             <div>
                                 <label className="block text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-2 ml-1">Subtext Narrative</label>
                                 <textarea
-                                    value={localCms.hero.subHeadline}
-                                    onChange={(e) => setLocalCms({ ...localCms, hero: { ...localCms.hero, subHeadline: e.target.value } })}
+                                    value={localSettings.hero?.subHeadline || ""}
+                                    onChange={(e) => setLocalSettings({ ...localSettings, hero: { ...localSettings.hero, subHeadline: e.target.value } })}
                                     rows={3}
                                     className="w-full px-6 py-4 bg-neutral-50 border border-neutral-beige rounded-xl focus:ring-4 focus:ring-secondary/5 focus:outline-none font-medium text-primary text-sm leading-relaxed"
                                 />
@@ -102,8 +102,8 @@ export default function CMSPage() {
                                 <label className="block text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-2 ml-1">Hero Asset URL</label>
                                 <input
                                     type="text"
-                                    value={localCms.hero.image}
-                                    onChange={(e) => setLocalCms({ ...localCms, hero: { ...localCms.hero, image: e.target.value } })}
+                                    value={localSettings.hero?.image || ""}
+                                    onChange={(e) => setLocalSettings({ ...localSettings, hero: { ...localSettings.hero, image: e.target.value } })}
                                     className="w-full px-6 py-4 bg-neutral-50 border border-neutral-beige rounded-xl focus:ring-4 focus:ring-secondary/5 focus:outline-none font-mono text-[10px] text-neutral-400"
                                 />
                             </div>
@@ -118,7 +118,7 @@ export default function CMSPage() {
                     <p className="text-xs text-neutral-400 font-bold uppercase tracking-widest mb-10 border-b border-neutral-beige pb-4">Homepage Modular Control</p>
 
                     <div className="space-y-4">
-                        {Object.entries(localCms.homepageToggles).map(([key, isEnabled]) => (
+                        {localSettings.homepageToggles && Object.entries(localSettings.homepageToggles).map(([key, isEnabled]) => (
                             <div key={key} className="flex items-center justify-between p-6 bg-neutral-cream/5 border border-neutral-beige/50 rounded-2xl hover:bg-neutral-cream transition-all duration-300 group">
                                 <div className="flex items-center gap-4">
                                     <div className={`p-3 rounded-xl transition-colors ${isEnabled ? 'bg-secondary/20 text-primary' : 'bg-neutral-100 text-neutral-300'}`}>
@@ -130,7 +130,7 @@ export default function CMSPage() {
                                     </div>
                                 </div>
                                 <button
-                                    onClick={() => setLocalCms({ ...localCms, homepageToggles: { ...localCms.homepageToggles, [key]: !isEnabled } })}
+                                    onClick={() => setLocalSettings({ ...localSettings, homepageToggles: { ...localSettings.homepageToggles, [key]: !isEnabled } })}
                                     className={`transition-all duration-500 transform ${isEnabled ? "text-secondary scale-110" : "text-neutral-200"}`}
                                 >
                                     {isEnabled ? <ToggleRight size={44} /> : <ToggleLeft size={44} />}

@@ -11,7 +11,7 @@ export default function OrdersPage() {
 
     const filteredOrders = filter === "All"
         ? orders
-        : orders.filter(o => o.status === filter.toLowerCase());
+        : orders.filter(o => o.status?.toLowerCase() === filter.toLowerCase());
 
     const toggleExpand = (id) => {
         if (expandedOrder === id) setExpandedOrder(null);
@@ -19,6 +19,7 @@ export default function OrdersPage() {
     };
 
     const getStatusIcon = (status) => {
+        if (!status) return <Clock size={16} />;
         switch (status.toLowerCase()) {
             case "processing": return <Clock size={16} />;
             case "confirmed": return <Package size={16} />;
@@ -30,6 +31,7 @@ export default function OrdersPage() {
     };
 
     const getStatusStyles = (status) => {
+        if (!status) return "bg-neutral-50 text-neutral-500 border-neutral-200";
         switch (status.toLowerCase()) {
             case "processing": return "bg-yellow-50 text-yellow-700 border-yellow-200";
             case "confirmed": return "bg-blue-50 text-blue-700 border-blue-200";
@@ -94,7 +96,7 @@ export default function OrdersPage() {
                                     </div>
                                     <div className="hidden lg:flex flex-col">
                                         <span className="text-[9px] text-neutral-400 font-bold uppercase tracking-[0.2em] mb-1">Client Title</span>
-                                        <span className="text-sm font-bold text-primary truncate">{order.user?.name || "Guest Checkout"}</span>
+                                        <span className="text-sm font-bold text-primary truncate">{order.user?.name || order.shippingAddress?.fullName || "Guest Checkout"}</span>
                                     </div>
                                     <div className="flex flex-col">
                                         <span className="text-[9px] text-neutral-400 font-bold uppercase tracking-[0.2em] mb-1">Valuation</span>
@@ -164,7 +166,7 @@ export default function OrdersPage() {
                                             <div className="bg-white p-6 rounded-2xl border border-neutral-beige/50">
                                                 <h4 className="text-[10px] font-bold text-primary uppercase tracking-[0.2em] mb-4">Logistics Target</h4>
                                                 <div className="space-y-2">
-                                                    <p className="text-xs font-bold text-primary">{order.user?.name || "Private Customer"}</p>
+                                                    <p className="text-xs font-bold text-primary">{order.user?.name || order.shippingAddress?.fullName || "Guest Customer"}</p>
                                                     <p className="text-xs text-neutral-gray font-medium">{order.user?.email || "No email active"}</p>
                                                     <div className="pt-2 mt-2 border-t border-neutral-100 italic text-[11px] text-neutral-400 leading-relaxed">
                                                         {order.shippingAddress?.street}, {order.shippingAddress?.city}<br />

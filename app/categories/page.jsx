@@ -8,19 +8,19 @@ export default function CategoriesPage() {
     const { categories, addCategory, loading, refreshData } = useAdmin();
     const [searchTerm, setSearchTerm] = useState("");
     const [isAdding, setIsAdding] = useState(false);
-    const [newCat, setNewCat] = useState({ name: "", description: "", slug: "" });
+    const [newCat, setNewCat] = useState({ title: "", description: "", slug: "" });
 
     const filteredCategories = categories.filter(c =>
-        c.name.toLowerCase().includes(searchTerm.toLowerCase())
+        (c.title || "").toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     const handleSave = async (e) => {
         e.preventDefault();
-        const slug = newCat.slug || newCat.name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
+        const slug = newCat.slug || newCat.title.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
         const success = await addCategory({ ...newCat, slug });
         if (success) {
             setIsAdding(false);
-            setNewCat({ name: "", description: "", slug: "" });
+            setNewCat({ title: "", description: "", slug: "" });
             refreshData();
         }
     };
@@ -79,7 +79,7 @@ export default function CategoriesPage() {
                                 </div>
                             </div>
 
-                            <h3 className="text-xl font-heading font-bold text-primary mb-2 italic">{category.name}</h3>
+                            <h3 className="text-xl font-heading font-bold text-primary mb-2 italic">{category.title}</h3>
                             <p className="text-xs text-neutral-gray leading-relaxed line-clamp-2 mb-6 font-medium">
                                 {category.description || "No description assigned to this collection tier."}
                             </p>
@@ -120,12 +120,12 @@ export default function CategoriesPage() {
 
                         <form onSubmit={handleSave} className="space-y-6">
                             <div>
-                                <label className="block text-[10px] font-bold text-primary uppercase tracking-[0.2em] mb-2 ml-1">Collection Name *</label>
+                                <label className="block text-[10px] font-bold text-primary uppercase tracking-[0.2em] mb-2 ml-1">Collection Title *</label>
                                 <input
                                     type="text"
                                     required
-                                    value={newCat.name}
-                                    onChange={(e) => setNewCat({ ...newCat, name: e.target.value })}
+                                    value={newCat.title}
+                                    onChange={(e) => setNewCat({ ...newCat, title: e.target.value })}
                                     className="w-full px-6 py-4 bg-neutral-cream/20 border border-neutral-beige rounded-2xl focus:outline-none focus:ring-4 focus:ring-secondary/20 font-bold text-primary placeholder:text-neutral-300"
                                     placeholder="e.g. Rare Elixirs"
                                 />

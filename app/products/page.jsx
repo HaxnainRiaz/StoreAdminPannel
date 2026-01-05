@@ -28,6 +28,7 @@ export default function ProductsPage() {
         ingredients: [],
         visibilityStatus: "published",
         isBestseller: false,
+        isFeatured: false,
         seo: {
             metaTitle: "",
             metaDescription: ""
@@ -35,10 +36,18 @@ export default function ProductsPage() {
     };
 
     const handleEdit = (product) => {
-        // Ensure nested objects exist to avoid crashes
+        // Map backend fields back to frontend form state
         const productForEditing = {
             ...product,
-            seo: product.seo || { metaTitle: "", metaDescription: "" }
+            isBestseller: product.isBestSeller || false,
+            howToUse: product.usage || "",
+            // If category is an object (due to populate), extract its ID
+            category: product.category?._id || product.category || "",
+            seo: {
+                metaTitle: product.metaTitle || "",
+                metaDescription: product.metaDescription || ""
+            },
+            visibilityStatus: product.status === 'active' ? 'published' : 'draft'
         };
         setCurrentProduct(productForEditing);
         setIsEditing(true);
@@ -102,7 +111,7 @@ export default function ProductsPage() {
     // Filter logic
     const filteredProducts = products.filter(p =>
         p.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (p.category && p.category.name && p.category.name.toLowerCase().includes(searchTerm.toLowerCase()))
+        (p.category && p.category.title && p.category.title.toLowerCase().includes(searchTerm.toLowerCase()))
     );
 
     return (
@@ -212,7 +221,7 @@ export default function ProductsPage() {
                                     >
                                         <option value="">Select Category</option>
                                         {categories.map(cat => (
-                                            <option key={cat._id} value={cat._id}>{cat.name}</option>
+                                            <option key={cat._id} value={cat._id}>{cat.title}</option>
                                         ))}
                                         {/* Fallback if no categories in DB yet */}
                                         {categories.length === 0 && (
@@ -328,6 +337,17 @@ export default function ProductsPage() {
                                     <option value="draft">Draft (Internal)</option>
                                     <option value="hidden">Archived (Deleted)</option>
                                 </select>
+                            </div>
+
+                            <div className="bg-neutral-beige/10 p-6 rounded-2xl border border-neutral-beige/30 flex items-center justify-between">
+                                <label className="text-sm font-bold text-primary uppercase tracking-wider text-[10px]">Featured Product</label>
+                                <button
+                                    type="button"
+                                    onClick={() => setCurrentProduct({ ...currentProduct, isFeatured: !currentProduct.isFeatured })}
+                                    className={`w-12 h-6 rounded-full transition-colors relative ${currentProduct.isFeatured ? 'bg-secondary' : 'bg-neutral-300'}`}
+                                >
+                                    <div className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${currentProduct.isFeatured ? 'translate-x-6' : ''}`} />
+                                </button>
                             </div>
 
                             <div className="bg-neutral-beige/10 p-6 rounded-2xl border border-neutral-beige/30 flex items-center justify-between">

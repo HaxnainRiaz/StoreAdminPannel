@@ -89,11 +89,10 @@ const ProductTable = ({ products, onEdit, onDelete }) => {
                                 <td className="px-6 py-5">
                                     <div className="flex items-center gap-4">
                                         <div className="w-14 h-14 relative rounded-xl overflow-hidden bg-neutral-100 shrink-0 border border-neutral-beige/50 group-hover:shadow-md transition-shadow">
-                                            <Image
-                                                src={product.images[0]}
+                                            <img
+                                                src={product.images[0] || "https://placehold.co/400x400?text=Product"}
                                                 alt={product.title}
-                                                fill
-                                                className="object-cover transition-transform duration-500 group-hover:scale-110"
+                                                className="w-full h-full object-cover"
                                             />
                                         </div>
                                         <div>
@@ -104,7 +103,7 @@ const ProductTable = ({ products, onEdit, onDelete }) => {
                                 </td>
                                 <td className="px-6 py-5">
                                     <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 bg-neutral-50 px-3 py-1 rounded-full border border-neutral-100">
-                                        {product.category?.name || "No Category"}
+                                        {product.category?.title || "No Category"}
                                     </span>
                                 </td>
                                 <td className="px-6 py-5">

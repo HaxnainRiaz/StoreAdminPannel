@@ -4,7 +4,7 @@ import { createContext, useContext, useState, useEffect, useCallback } from "rea
 
 const AdminContext = createContext();
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ? `${process.env.NEXT_PUBLIC_API_URL}/api` : "http://localhost:5000/api";
+const API_URL = `${process.env.NEXT_PUBLIC_API_URL}/api`;
 
 export const AdminProvider = ({ children }) => {
     const [stats, setStats] = useState({

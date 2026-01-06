@@ -83,7 +83,7 @@ export default function ReviewsPage() {
                                     {review.adminReply && (
                                         <div className="mt-8 p-6 bg-neutral-cream/30 rounded-[2rem] border border-secondary/20 relative shadow-inner">
                                             <div className="absolute -top-3 left-6 px-4 py-1 bg-primary text-[9px] font-bold text-secondary tracking-[0.2em] uppercase rounded-full shadow-sm">
-                                                Curator Response
+                                                Creator Response
                                             </div>
                                             <p className="text-sm text-primary font-bold italic leading-relaxed">{review.adminReply}</p>
                                         </div>

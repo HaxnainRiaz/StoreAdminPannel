@@ -10,7 +10,10 @@ export default function ReviewsPage() {
     const [replyText, setReplyText] = useState("");
 
     const handleSaveStatus = async (id, status, reply = null) => {
-        const success = await updateReview(id, status, reply);
+        const updateData = { status };
+        if (reply !== null) updateData.adminReply = reply;
+
+        const success = await updateReview(id, updateData);
         if (success) {
             setReplyingTo(null);
             setReplyText("");

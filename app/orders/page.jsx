@@ -11,7 +11,7 @@ export default function OrdersPage() {
 
     const filteredOrders = filter === "All"
         ? orders
-        : orders.filter(o => o.status?.toLowerCase() === filter.toLowerCase());
+        : orders.filter(o => o.orderStatus?.toLowerCase() === filter.toLowerCase());
 
     const toggleExpand = (id) => {
         if (expandedOrder === id) setExpandedOrder(null);
@@ -109,10 +109,10 @@ export default function OrdersPage() {
                                     <div className="flex items-center justify-between">
                                         <div className={`
                                             flex items-center gap-2 px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border transition-all duration-300
-                                            ${getStatusStyles(order.status)}
+                                            ${getStatusStyles(order.orderStatus)}
                                         `}>
-                                            {getStatusIcon(order.status)}
-                                            {order.status}
+                                            {getStatusIcon(order.orderStatus)}
+                                            {order.orderStatus}
                                         </div>
                                         <div className={`p-2 rounded-full transition-all duration-300 ${expandedOrder === order._id ? 'bg-secondary text-primary' : 'text-neutral-300 group-hover:text-primary'}`}>
                                             {expandedOrder === order._id ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
@@ -202,10 +202,10 @@ export default function OrdersPage() {
                                                     <button
                                                         key={s}
                                                         onClick={() => updateOrderStatus(order._id, s.toLowerCase())}
-                                                        disabled={order.status === s.toLowerCase()}
+                                                        disabled={order.orderStatus === s.toLowerCase()}
                                                         className={`
                                                             w-full py-3.5 rounded-xl text-[10px] font-bold uppercase tracking-widest border transition-all duration-300 shadow-sm
-                                                            ${order.status === s.toLowerCase()
+                                                            ${order.orderStatus === s.toLowerCase()
                                                                 ? 'bg-primary text-secondary border-primary shadow-primary/20 cursor-default'
                                                                 : 'bg-white text-neutral-400 border-neutral-200 hover:border-secondary hover:text-secondary hover:shadow-md active:scale-[0.98]'
                                                             }

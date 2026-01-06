@@ -60,13 +60,13 @@ export default function AdminDashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <StatsCard
                     title="Gross Revenue"
-                    value={`$${stats.totalRevenue.toLocaleString()}`}
+                    value={`$${(stats.totalRevenue || 0).toLocaleString()}`}
                     trend={15.4}
                     icon={<Activity size={20} className="text-secondary" />}
                 />
                 <StatsCard
                     title="Total Orders"
-                    value={stats.totalOrders}
+                    value={stats.totalOrders || 0}
                     trend={12.8}
                     icon={<ShoppingBag size={20} className="text-secondary" />}
                 />
@@ -78,7 +78,7 @@ export default function AdminDashboard() {
                 />
                 <StatsCard
                     title="Customer Base"
-                    value={stats.totalCustomers}
+                    value={stats.totalCustomers || 0}
                     trend={24.5}
                     icon={<Package size={20} className="text-secondary" />}
                 />
@@ -116,7 +116,7 @@ export default function AdminDashboard() {
                                                 <td className="py-5 font-mono text-[11px] text-primary">{order._id.substring(18).toUpperCase()}</td>
                                                 <td className="py-5">
                                                     <div className="flex flex-col">
-                                                        <span className="text-sm font-bold text-primary">{order.user?.name || "Guest Customer"}</span>
+                                                        <span className="text-sm font-bold text-primary">{order.customerName || order.shippingAddress?.fullName || order.user?.name || "Guest Customer"}</span>
                                                         <span className="text-[10px] text-neutral-400">{new Date(order.createdAt).toLocaleDateString()}</span>
                                                     </div>
                                                 </td>
@@ -124,12 +124,12 @@ export default function AdminDashboard() {
                                                 <td className="py-5 text-right">
                                                     <span className={`
                                                         inline-block px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider border
-                                                        ${order.status === 'processing' ? 'bg-yellow-50 text-yellow-700 border-yellow-200' : ''}
-                                                        ${order.status === 'shipped' ? 'bg-blue-50 text-blue-700 border-blue-200' : ''}
-                                                        ${order.status === 'delivered' ? 'bg-green-50 text-green-700 border-green-200' : ''}
-                                                        ${order.status === 'cancelled' ? 'bg-red-50 text-red-700 border-red-200' : ''}
+                                                        ${order.orderStatus === 'processing' ? 'bg-yellow-50 text-yellow-700 border-yellow-200' : ''}
+                                                        ${order.orderStatus === 'shipped' ? 'bg-blue-50 text-blue-700 border-blue-200' : ''}
+                                                        ${order.orderStatus === 'delivered' ? 'bg-green-50 text-green-700 border-green-200' : ''}
+                                                        ${order.orderStatus === 'cancelled' ? 'bg-red-50 text-red-700 border-red-200' : ''}
                                                     `}>
-                                                        {order.status}
+                                                        {order.orderStatus}
                                                     </span>
                                                 </td>
                                             </tr>

@@ -156,8 +156,8 @@ export const AdminProvider = ({ children }) => {
         return false;
     };
 
-    const updateReview = async (id, adminReply) => {
-        const data = await adminRequest(`/reviews/${id}`, 'PUT', { adminReply });
+    const updateReview = async (id, updatedFields) => {
+        const data = await adminRequest(`/reviews/${id}`, 'PUT', updatedFields);
         if (data.success) { fetchData(); return true; }
         return false;
     };

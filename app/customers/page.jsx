@@ -16,7 +16,7 @@ export default function CustomersPage() {
 
     const toggleBanStatus = async (customer) => {
         const isBanned = customer.status === 'banned';
-        const API_URL = "http://localhost:5000/api";
+        const API_URL = `${process.env.NEXT_PUBLIC_API_URL}/api`;
         const res = await fetch(`${API_URL}/users/${customer._id}`, {
             method: 'PUT',
             headers: {

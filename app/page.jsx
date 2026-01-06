@@ -42,7 +42,7 @@ export default function AdminDashboard() {
 
                 <div className="flex items-center gap-3">
                     <a
-                        href="https://skin-care-store-pi.vercel.app" // Link to the customer storefront
+                        href="https://skin-care-store-tau.vercel.app/" // Link to the customer storefront
                         target="_blank"
                         className="flex items-center gap-2 bg-primary text-secondary px-5 py-3 rounded-2xl hover:bg-primary-dark transition-all shadow-lg shadow-primary/20 font-bold text-xs uppercase tracking-widest active:scale-95"
                     >

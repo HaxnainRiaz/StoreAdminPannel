@@ -10,6 +10,8 @@ export default function InventoryPage() {
     const [searchTerm, setSearchTerm] = useState("");
     const [localStocks, setLocalStocks] = useState({}); // { productId: stockValue }
     const [isUpdating, setIsUpdating] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [idToDelete, setIdToDelete] = useState(null);
 
     // Sync local stocks when products load
     useEffect(() => {
@@ -35,6 +37,19 @@ export default function InventoryPage() {
         setIsUpdating(true);
         await updateProduct(id, { stock: localStocks[id] });
         setIsUpdating(false);
+    };
+
+    const confirmDelete = (id) => {
+        setIdToDelete(id);
+        setIsDeleteModalOpen(true);
+    };
+
+    const executeDelete = async () => {
+        if (idToDelete) {
+            await deleteProduct(idToDelete);
+            setIsDeleteModalOpen(false);
+            setIdToDelete(null);
+        }
     };
 
     const handleBatchUpdate = async () => {
@@ -210,7 +225,7 @@ export default function InventoryPage() {
                                                     </button>
                                                 )}
                                                 <button
-                                                    onClick={() => deleteProduct(product._id)}
+                                                    onClick={() => confirmDelete(product._id)}
                                                     className="p-3 text-neutral-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all shadow-sm border border-transparent hover:border-red-100"
                                                     title="Decommission Asset"
                                                 >
@@ -225,6 +240,31 @@ export default function InventoryPage() {
                     </table>
                 </div>
             </div>
+
+            {/* Delete Modal */}
+            {isDeleteModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-primary/20 backdrop-blur-md">
+                    <div className="bg-white p-10 rounded-[2.5rem] shadow-large max-w-md w-full mx-4 animate-scaleIn border border-neutral-cream relative overflow-hidden">
+                        <div className="absolute top-0 left-0 w-full h-1 bg-red-500" />
+                        <h3 className="text-2xl font-heading font-bold text-primary mb-3 italic">Decommission Asset?</h3>
+                        <p className="text-neutral-gray mb-8 leading-relaxed font-medium">This action will permanently purge the item from the central inventory and storefront. This operation is irreversible.</p>
+                        <div className="flex gap-4">
+                            <button
+                                onClick={() => setIsDeleteModalOpen(false)}
+                                className="flex-1 py-4 border border-neutral-200 text-neutral-400 font-bold rounded-2xl hover:bg-neutral-50 transition-colors uppercase tracking-widest text-[10px]"
+                            >
+                                Abort
+                            </button>
+                            <button
+                                onClick={executeDelete}
+                                className="flex-1 py-4 bg-red-600 text-white font-bold rounded-2xl hover:bg-red-700 transition-shadow shadow-lg shadow-red-200 active:scale-95 uppercase tracking-widest text-[10px]"
+                            >
+                                Confirm Purge
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

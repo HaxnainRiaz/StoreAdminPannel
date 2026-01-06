@@ -125,76 +125,114 @@ export const AdminProvider = ({ children }) => {
         return await res.json();
     };
 
-    // Actions
+    // Optimized Actions
     const addProduct = async (product) => {
         const data = await adminRequest('/products', 'POST', product);
-        if (data.success) { fetchData(); return true; }
+        if (data.success) {
+            setProducts(prev => [data.data, ...prev]);
+            setStats(prev => ({ ...prev, totalProducts: (prev.totalProducts || 0) + 1 }));
+            return true;
+        }
         return false;
     };
 
     const updateProduct = async (id, updatedData) => {
         const data = await adminRequest(`/products/${id}`, 'PUT', updatedData);
-        if (data.success) { fetchData(); return true; }
+        if (data.success) {
+            setProducts(prev => prev.map(p => p._id === id ? data.data : p));
+            return true;
+        }
         return false;
     };
 
     const deleteProduct = async (id) => {
         const data = await adminRequest(`/products/${id}`, 'DELETE');
-        if (data.success) { fetchData(); return true; }
+        if (data.success) {
+            setProducts(prev => prev.filter(p => p._id !== id));
+            setStats(prev => ({ ...prev, totalProducts: Math.max(0, (prev.totalProducts || 0) - 1) }));
+            return true;
+        }
         return false;
     };
 
     const addCategory = async (cat) => {
         const data = await adminRequest('/categories', 'POST', cat);
-        if (data.success) { fetchData(); return true; }
+        if (data.success) {
+            setCategories(prev => [data.data, ...prev]);
+            return true;
+        }
         return false;
     };
 
     const updateOrderStatus = async (id, status) => {
         const data = await adminRequest(`/orders/${id}/status`, 'PUT', { status });
-        if (data.success) { fetchData(); return true; }
+        if (data.success) {
+            setOrders(prev => prev.map(o => o._id === id ? data.data : o));
+            return true;
+        }
         return false;
     };
 
     const updateReview = async (id, updatedFields) => {
         const data = await adminRequest(`/reviews/${id}`, 'PUT', updatedFields);
-        if (data.success) { fetchData(); return true; }
+        if (data.success) {
+            setReviews(prev => prev.map(r => r._id === id ? data.data : r));
+            return true;
+        }
         return false;
     };
 
     const updateSettings = async (body) => {
         const data = await adminRequest('/settings', 'PUT', body);
-        if (data.success) { fetchData(); return true; }
+        if (data.success) {
+            setSettings(data.data);
+            return true;
+        }
         return false;
     };
 
     const addBanner = async (banner) => {
         const data = await adminRequest('/banners', 'POST', banner);
-        if (data.success) { fetchData(); return true; }
+        if (data.success) {
+            setBanners(prev => [data.data, ...prev]);
+            return true;
+        }
         return false;
     };
 
     const deleteBanner = async (id) => {
         const data = await adminRequest(`/banners/${id}`, 'DELETE');
-        if (data.success) { fetchData(); return true; }
+        if (data.success) {
+            setBanners(prev => prev.filter(b => b._id !== id));
+            return true;
+        }
         return false;
     };
 
     const updateTicket = async (id, body) => {
         const data = await adminRequest(`/support-tickets/${id}`, 'PUT', body);
-        if (data.success) { fetchData(); return true; }
+        if (data.success) {
+            setSupportTickets(prev => prev.map(t => t._id === id ? data.data : t));
+            return true;
+        }
         return false;
     };
 
     const addCoupon = async (coupon) => {
         const data = await adminRequest('/coupons', 'POST', coupon);
-        if (data.success) { fetchData(); return true; }
+        if (data.success) {
+            setCoupons(prev => [data.data, ...prev]);
+            return true;
+        }
         return false;
     };
 
     const deleteCoupon = async (id) => {
         const data = await adminRequest(`/coupons/${id}`, 'DELETE');
-        if (data.success) { fetchData(); return true; }
+        if (data.success) {
+            setCoupons(prev => prev.filter(c => c._id !== id));
+            return true;
+        }
         return false;
     };
 

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useAdmin } from "@/context/AdminContext";
 import ProductTable from "@/components/admin/ProductTable";
-import { Plus, Search, X, Save, ArrowLeft } from "lucide-react";
+import { Plus, Search, X, Save, ArrowLeft, Trash2, Upload, Image as ImageIcon, Link as LinkIcon } from "lucide-react";
 
 export default function ProductsPage() {
     const { products, addProduct, updateProduct, deleteProduct, categories } = useAdmin();
@@ -14,6 +14,7 @@ export default function ProductsPage() {
     const [productToDelete, setProductToDelete] = useState(null);
     const [isSaving, setIsSaving] = useState(false);
     const [saveError, setSaveError] = useState("");
+    const [newImageUrl, setNewImageUrl] = useState("");
 
     const emptyProduct = {
         title: "",
@@ -106,6 +107,34 @@ export default function ProductsPage() {
             setSaveError("Failed to save product. Please ensure all required fields (Title, Description, Price, Stock) are filled and Category is selected.");
         }
         setIsSaving(false);
+    };
+
+    const handleImageRemove = (index) => {
+        const newImages = currentProduct.images.filter((_, i) => i !== index);
+        setCurrentProduct({ ...currentProduct, images: newImages });
+    };
+
+    const handleFileUpload = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setCurrentProduct({
+                    ...currentProduct,
+                    images: [...currentProduct.images, reader.result]
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const addImageUrl = (url) => {
+        if (url && url.trim()) {
+            setCurrentProduct({
+                ...currentProduct,
+                images: [...currentProduct.images, url.trim()]
+            });
+        }
     };
 
     // Filter logic
@@ -308,22 +337,92 @@ export default function ProductsPage() {
                         {/* Right Column: Media & Actions */}
                         <div className="space-y-6">
                             <div className="bg-neutral-beige/10 p-6 rounded-2xl border border-neutral-beige/30 shadow-inner">
-                                <label className="block text-sm font-bold text-primary mb-3 uppercase tracking-wider text-[10px]">Product Media</label>
-                                <div className="aspect-square w-full rounded-2xl overflow-hidden bg-white border border-neutral-beige mb-4 relative group">
-                                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                                    <img src={currentProduct.images[0]} alt="Preview" className="w-full h-full object-cover" />
-                                    <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-bold">
-                                        LIVE PREVIEW
+                                <label className="block text-sm font-bold text-primary mb-3 uppercase tracking-wider text-[10px]">
+                                    Product Media ({currentProduct.images.length})
+                                    <span className="ml-2 text-[8px] bg-green-500 text-white px-2 py-0.5 rounded">v2.0 MULTI-IMAGE</span>
+                                </label>
+
+                                {/* Image Grid */}
+                                <div className="grid grid-cols-2 gap-3 mb-6">
+                                    {currentProduct.images.map((img, idx) => (
+                                        <div key={idx} className="relative aspect-square rounded-xl overflow-hidden bg-white border border-neutral-beige group shadow-sm">
+                                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                                            <img src={img} alt={`Preview ${idx + 1}`} className="w-full h-full object-cover" />
+                                            <button
+                                                type="button"
+                                                onClick={() => handleImageRemove(idx)}
+                                                className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                                            >
+                                                <Trash2 size={12} />
+                                            </button>
+                                            {idx === 0 && (
+                                                <div className="absolute bottom-0 left-0 right-0 bg-primary/80 text-white text-[8px] font-bold py-1 text-center uppercase tracking-tighter">
+                                                    Primary Cover
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+
+                                    {/* Add New Placeholder */}
+                                    <div className="aspect-square rounded-xl border-2 border-dashed border-neutral-beige flex flex-col items-center justify-center text-neutral-300 gap-1 bg-neutral-50/50 hover:bg-neutral-50 transition-colors">
+                                        <ImageIcon size={24} strokeWidth={1} />
+                                        <span className="text-[8px] font-bold uppercase">Gallery Slot</span>
                                     </div>
                                 </div>
-                                <input
-                                    type="text"
-                                    placeholder="Paste Image URL here..."
-                                    value={currentProduct.images[0]}
-                                    onChange={(e) => setCurrentProduct({ ...currentProduct, images: [e.target.value] })}
-                                    className="w-full px-4 py-3 border border-neutral-beige rounded-xl focus:ring-2 focus:ring-secondary focus:outline-none text-xs bg-white shadow-soft"
-                                />
-                                <p className="text-[10px] text-neutral-400 mt-2 text-center">Use high-quality [1:1] aspect ratio urls</p>
+
+                                {/* Add Actions */}
+                                <div className="space-y-3">
+                                    <div className="flex gap-2">
+                                        <div className="relative flex-1">
+                                            <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" size={14} />
+                                            <input
+                                                type="text"
+                                                placeholder="Enter image URL..."
+                                                value={newImageUrl}
+                                                onChange={(e) => setNewImageUrl(e.target.value)}
+                                                onKeyPress={(e) => {
+                                                    if (e.key === 'Enter') {
+                                                        e.preventDefault();
+                                                        addImageUrl(newImageUrl);
+                                                        setNewImageUrl("");
+                                                    }
+                                                }}
+                                                className="w-full pl-9 pr-4 py-3 border border-neutral-beige rounded-xl focus:ring-2 focus:ring-secondary focus:outline-none text-xs bg-white shadow-soft"
+                                            />
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                addImageUrl(newImageUrl);
+                                                setNewImageUrl("");
+                                            }}
+                                            className="bg-secondary text-primary px-4 py-3 rounded-xl hover:bg-secondary-dark transition-colors"
+                                        >
+                                            <Plus size={16} />
+                                        </button>
+                                    </div>
+
+                                    <div className="relative">
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={handleFileUpload}
+                                            id="file-upload"
+                                            className="hidden"
+                                        />
+                                        <label
+                                            htmlFor="file-upload"
+                                            className="flex items-center justify-center gap-2 w-full py-3 px-4 border border-neutral-300 border-dashed rounded-xl bg-white hover:bg-neutral-50 cursor-pointer transition-all group"
+                                        >
+                                            <Upload size={14} className="text-neutral-400 group-hover:text-primary transition-colors" />
+                                            <span className="text-[10px] font-bold text-neutral-500 group-hover:text-primary uppercase tracking-widest">Upload from Device</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <p className="text-[9px] text-neutral-400 mt-4 text-center italic font-medium leading-relaxed">
+                                    The first image will be used as the product cover.<br />Multiple images create a gallery for shoppers.
+                                </p>
                             </div>
 
                             <div className="bg-neutral-beige/10 p-6 rounded-2xl border border-neutral-beige/30">

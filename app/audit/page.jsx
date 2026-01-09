@@ -21,7 +21,7 @@ export default function AuditLogsPage() {
                 <p className="text-primary font-heading font-bold animate-pulse">Decrypting Ledger...</p>
             </div>
         );
-        //hdhd
+        //hdhdjhvhgv
     }
 
     return (

@@ -100,8 +100,8 @@ export const ProtectedRoute = ({ children }) => {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-neutral-cream flex items-center justify-center">
-                <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+            <div className="min-h-screen bg-[#FDFCFB] flex items-center justify-center">
+                <div className="w-12 h-12 border-4 border-[#0a4019] border-t-transparent rounded-full animate-spin" />
             </div>
         );
     }

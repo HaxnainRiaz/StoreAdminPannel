@@ -12,7 +12,7 @@ export default function SidebarWrapper({ children }) {
     }
 
     return (
-        <div className="min-h-screen bg-neutral-cream text-neutral-gray font-body font-sans">
+        <div className="min-h-screen bg-[#FDFCFB] text-[#6B6B6B] font-body font-sans">
             <Sidebar />
             <main className="transition-all duration-300 md:ml-64 min-h-screen p-6 md:p-10">
                 <div className="max-w-7xl mx-auto animate-fadeIn">

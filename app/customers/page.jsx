@@ -1,11 +1,13 @@
 "use client";
 
 import { useAdmin } from "@/context/AdminContext";
+import { formatPrice } from "@/lib/utils";
 import { useState } from "react";
-import { Search, Mail, Phone, MapPin, Edit2, Save, X, User, Ban, ShieldCheck, History } from "lucide-react";
+import { SearchBar, Button } from "@/components/ui";
+import { Mail, Phone, MapPin, Edit2, Save, X, User, Ban, ShieldCheck, History, ShoppingBag } from "lucide-react";
 
 export default function CustomersPage() {
-    const { customers, loading, refreshData } = useAdmin();
+    const { customers, loading, refreshData, orders } = useAdmin();
     const [searchTerm, setSearchTerm] = useState("");
     const [viewingOrders, setViewingOrders] = useState(null);
 
@@ -13,6 +15,12 @@ export default function CustomersPage() {
         c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         c.email.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+    const customerOrders = viewingOrders
+        ? orders.filter(o =>
+            (typeof o.user === 'string' ? o.user === viewingOrders._id : o.user?._id === viewingOrders._id)
+        )
+        : [];
 
     const toggleBanStatus = async (customer) => {
         const isBanned = customer.status === 'banned';
@@ -31,8 +39,8 @@ export default function CustomersPage() {
     if (loading) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[50vh]">
-                <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4" />
-                <p className="text-primary font-heading font-bold animate-pulse">Scanning Customer Nodes...</p>
+                <div className="w-10 h-10 border-4 border-[#0a4019] border-t-transparent rounded-full animate-spin mb-4" />
+                <p className="text-[#0a4019] font-heading font-bold animate-pulse">Scanning Customer Nodes...</p>
             </div>
         );
     }
@@ -41,26 +49,22 @@ export default function CustomersPage() {
         <div className="space-y-8 animate-fadeIn">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
-                    <h1 className="text-4xl font-heading font-bold text-primary italic">Client Directory</h1>
-                    <p className="text-neutral-gray text-sm font-medium mt-1">Manage luxury estate access and history</p>
+                    <h1 className="text-4xl font-heading font-bold text-[#0a4019] italic">Client Directory</h1>
+                    <p className="text-[#6B6B6B] text-sm font-medium mt-1">Manage luxury estate access and history</p>
                 </div>
 
-                <div className="relative group">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-300 group-focus-within:text-secondary transition-colors" size={20} />
-                    <input
-                        type="text"
-                        placeholder="Locate client by name or email..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-12 pr-6 py-4 bg-white border border-neutral-beige rounded-2xl focus:outline-none focus:ring-4 focus:ring-secondary/20 w-64 md:w-96 shadow-soft transition-all"
-                    />
-                </div>
+                <SearchBar
+                    placeholder="Locate client by name or email..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full md:w-96"
+                />
             </div>
 
-            <div className="bg-white rounded-[2.5rem] shadow-large border border-neutral-beige overflow-hidden">
+            <div className="bg-white rounded-[2.5rem] shadow-[0_16px_60px_rgba(11,47,38,0.15)] border border-[#F5F3F0] overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
-                        <thead className="bg-neutral-beige/10 text-[10px] uppercase text-neutral-400 font-bold tracking-[0.2em] border-b border-neutral-beige">
+                        <thead className="bg-[#F5F3F0]/10 text-[10px] uppercase text-neutral-400 font-bold tracking-[0.2em] border-b border-[#F5F3F0]">
                             <tr>
                                 <th className="p-8">Customer Identity</th>
                                 <th className="p-8">Contact Protocol</th>
@@ -69,29 +73,29 @@ export default function CustomersPage() {
                                 <th className="p-8 text-right">Operations</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-neutral-beige/50">
+                        <tbody className="divide-y divide-[#F5F3F0]/50">
                             {filteredCustomers.length > 0 ? (
                                 filteredCustomers.map((customer) => (
-                                    <tr key={customer._id} className="group hover:bg-neutral-cream/30 transition-all duration-300">
+                                    <tr key={customer._id} className="group hover:bg-[#FDFCFB]/30 transition-all duration-300">
                                         <td className="p-8">
                                             <div className="flex items-center gap-4">
-                                                <div className="w-12 h-12 rounded-2xl bg-secondary/20 flex items-center justify-center text-primary font-bold shadow-inner group-hover:scale-110 transition-transform">
+                                                <div className="w-12 h-12 rounded-2xl bg-[#d3d3d3]/20 flex items-center justify-center text-[#0a4019] font-bold shadow-inner group-hover:scale-110 transition-transform">
                                                     {customer.name.charAt(0)}
                                                 </div>
                                                 <div>
-                                                    <p className="font-bold text-primary text-sm">{customer.name}</p>
+                                                    <p className="font-bold text-[#0a4019] text-sm">{customer.name}</p>
                                                     <p className="text-[10px] text-neutral-400 font-mono mt-0.5">#{customer._id.substring(18).toUpperCase()}</p>
                                                 </div>
                                             </div>
                                         </td>
                                         <td className="p-8">
-                                            <div className="flex items-center gap-2 text-xs font-medium text-neutral-gray">
-                                                <Mail size={14} className="text-secondary" />
-                                                <span className="group-hover:text-primary transition-colors">{customer.email}</span>
+                                            <div className="flex items-center gap-2 text-xs font-medium text-[#6B6B6B]">
+                                                <Mail size={14} className="text-[#d3d3d3]" />
+                                                <span className="group-hover:text-[#0a4019] transition-colors">{customer.email}</span>
                                             </div>
                                         </td>
                                         <td className="p-8">
-                                            <span className="text-xs font-bold text-neutral-gray bg-neutral-100 px-3 py-1 rounded-full border border-neutral-200">
+                                            <span className="text-xs font-bold text-[#6B6B6B] bg-neutral-100 px-3 py-1 rounded-full border border-neutral-200">
                                                 {new Date(customer.createdAt).toLocaleDateString(undefined, { month: 'short', year: 'numeric', day: 'numeric' })}
                                             </span>
                                         </td>
@@ -110,7 +114,7 @@ export default function CustomersPage() {
                                             <div className="flex items-center justify-end gap-3">
                                                 <button
                                                     onClick={() => setViewingOrders(customer)}
-                                                    className="p-3 text-neutral-300 hover:text-primary hover:bg-neutral-cream rounded-xl transition-all"
+                                                    className="p-3 text-neutral-300 hover:text-[#0a4019] hover:bg-[#FDFCFB] rounded-xl transition-all"
                                                     title="View Order History"
                                                 >
                                                     <History size={18} />
@@ -143,8 +147,8 @@ export default function CustomersPage() {
 
             {/* History Modal Placeholder */}
             {viewingOrders && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-primary/20 backdrop-blur-md">
-                    <div className="bg-white p-10 rounded-[3rem] shadow-large max-w-2xl w-full mx-4 animate-scaleIn border border-neutral-cream relative">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0a4019]/20 backdrop-blur-md">
+                    <div className="bg-white p-10 rounded-[3rem] shadow-[0_16px_60px_rgba(11,47,38,0.15)] max-w-2xl w-full mx-4 animate-scaleIn border border-[#FDFCFB] relative">
                         <button
                             onClick={() => setViewingOrders(null)}
                             className="absolute top-8 right-8 p-2 hover:bg-neutral-100 rounded-full transition-colors text-neutral-400"
@@ -153,24 +157,48 @@ export default function CustomersPage() {
                         </button>
 
                         <div className="mb-8">
-                            <h3 className="text-2xl font-heading font-bold text-primary">Transaction History</h3>
-                            <p className="text-sm text-neutral-gray mt-1">Full purchase manifest for <span className="text-secondary font-bold">{viewingOrders.name}</span></p>
+                            <h3 className="text-2xl font-heading font-bold text-[#0a4019]">Transaction History</h3>
+                            <p className="text-sm text-[#6B6B6B] mt-1">Full purchase manifest for <span className="text-[#d3d3d3] font-bold">{viewingOrders.name}</span></p>
                         </div>
 
                         <div className="space-y-4 max-h-[400px] overflow-y-auto pr-4 custom-scrollbar">
-                            <p className="text-center py-10 text-neutral-300 italic text-sm border-2 border-dashed border-neutral-beige rounded-2xl">
-                                System integrating order archive...<br />
-                                <span className="text-[10px] uppercase tracking-widest mt-2 block">Connection Secure</span>
-                            </p>
+                            {customerOrders.length > 0 ? (
+                                customerOrders.map((order) => (
+                                    <div key={order._id} className="p-6 bg-[#FDFCFB]/50 border border-[#F5F3F0] rounded-2xl flex items-center justify-between group hover:border-[#d3d3d3] transition-all">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-10 h-10 rounded-xl bg-[#0a4019]/5 flex items-center justify-center text-[#0a4019]">
+                                                <ShoppingBag size={18} />
+                                            </div>
+                                            <div>
+                                                <p className="font-bold text-[#0a4019] text-sm font-heading italic">#{order._id.substring(18).toUpperCase()}</p>
+                                                <p className="text-[10px] text-neutral-400 font-medium">{new Date(order.createdAt).toLocaleDateString()}</p>
+                                            </div>
+                                        </div>
+                                        <div className="text-right">
+                                            <p className="text-sm font-bold text-[#0a4019]">{formatPrice(order.totalAmount)}</p>
+                                            <span className={`text-[9px] font-bold uppercase tracking-widest ${order.orderStatus === 'delivered' ? 'text-green-600' :
+                                                order.orderStatus === 'cancelled' ? 'text-red-600' :
+                                                    'text-[#d3d3d3]'
+                                                }`}>
+                                                {order.orderStatus}
+                                            </span>
+                                        </div>
+                                    </div>
+                                ))
+                            ) : (
+                                <p className="text-center py-10 text-neutral-300 italic text-sm border-2 border-dashed border-[#F5F3F0] rounded-2xl">
+                                    No transactions found for this node.<br />
+                                    <span className="text-[10px] uppercase tracking-widest mt-2 block">Connection Secure</span>
+                                </p>
+                            )}
                         </div>
 
                         <div className="mt-8 flex justify-end">
-                            <button
+                            <Button
                                 onClick={() => setViewingOrders(null)}
-                                className="bg-primary text-secondary px-8 py-3 rounded-2xl font-bold uppercase tracking-widest text-[10px] hover:bg-primary-dark transition-all"
                             >
                                 Close Archive
-                            </button>
+                            </Button>
                         </div>
                     </div>
                 </div>

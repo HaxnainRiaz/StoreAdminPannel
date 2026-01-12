@@ -3,6 +3,7 @@
 import { Edit, Trash2, Globe, EyeOff, FileText, MoreVertical } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
+import { formatPrice } from "@/lib/utils";
 
 const ProductTable = ({ products, onEdit, onDelete }) => {
     const [selectedProducts, setSelectedProducts] = useState([]);
@@ -46,7 +47,7 @@ const ProductTable = ({ products, onEdit, onDelete }) => {
     return (
         <div className="space-y-4">
             {selectedProducts.length > 0 && (
-                <div className="bg-primary text-white px-6 py-3 rounded-xl flex items-center justify-between animate-fadeIn">
+                <div className="bg-[#0a4019] text-white px-6 py-3 rounded-xl flex items-center justify-between animate-fadeIn">
                     <span className="text-sm font-medium">{selectedProducts.length} products selected</span>
                     <div className="flex gap-4">
                         <button className="text-sm hover:underline font-bold">Bulk Publish</button>
@@ -55,16 +56,16 @@ const ProductTable = ({ products, onEdit, onDelete }) => {
                 </div>
             )}
 
-            <div className="overflow-x-auto bg-white rounded-2xl shadow-soft border border-neutral-beige">
+            <div className="overflow-x-auto bg-white rounded-2xl shadow-[0_4px_20px_rgba(11,47,38,0.08)] border border-[#F5F3F0]">
                 <table className="w-full text-left border-collapse">
-                    <thead className="bg-neutral-beige/30 text-neutral-gray uppercase text-[10px] tracking-[0.15em] border-b border-neutral-beige">
+                    <thead className="bg-[#F5F3F0]/30 text-[#6B6B6B] uppercase text-[10px] tracking-[0.15em] border-b border-[#F5F3F0]">
                         <tr>
                             <th className="px-6 py-5 w-10">
                                 <input
                                     type="checkbox"
                                     onChange={toggleSelectAll}
                                     checked={selectedProducts.length === products.length && products.length > 0}
-                                    className="w-4 h-4 rounded border-neutral-300 text-primary focus:ring-primary cursor-pointer"
+                                    className="w-4 h-4 rounded border-neutral-300 text-[#0a4019] focus:ring-[#0a4019] cursor-pointer"
                                 />
                             </th>
                             <th className="px-6 py-5 font-bold">Product</th>
@@ -75,20 +76,20 @@ const ProductTable = ({ products, onEdit, onDelete }) => {
                             <th className="px-6 py-5 font-bold text-right">Actions</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-neutral-beige">
+                    <tbody className="divide-y divide-[#F5F3F0]">
                         {products.map((product) => (
-                            <tr key={product._id} className={`group hover:bg-neutral-cream transition-all duration-300 ${selectedProducts.includes(product._id) ? 'bg-secondary/5' : ''}`}>
+                            <tr key={product._id} className={`group hover:bg-[#FDFCFB] transition-all duration-300 ${selectedProducts.includes(product._id) ? 'bg-[#d3d3d3]/5' : ''}`}>
                                 <td className="px-6 py-5">
                                     <input
                                         type="checkbox"
                                         checked={selectedProducts.includes(product._id)}
                                         onChange={() => toggleSelect(product._id)}
-                                        className="w-4 h-4 rounded border-neutral-300 text-primary focus:ring-primary cursor-pointer"
+                                        className="w-4 h-4 rounded border-neutral-300 text-[#0a4019] focus:ring-[#0a4019] cursor-pointer"
                                     />
                                 </td>
                                 <td className="px-6 py-5">
                                     <div className="flex items-center gap-4">
-                                        <div className="w-14 h-14 relative rounded-xl overflow-hidden bg-neutral-100 shrink-0 border border-neutral-beige/50 group-hover:shadow-md transition-shadow">
+                                        <div className="w-14 h-14 relative rounded-xl overflow-hidden bg-neutral-100 shrink-0 border border-[#F5F3F0]/50 group-hover:shadow-md transition-shadow">
                                             <img
                                                 src={product.images[0] || "https://placehold.co/400x400?text=Product"}
                                                 alt={product.title}
@@ -96,8 +97,8 @@ const ProductTable = ({ products, onEdit, onDelete }) => {
                                             />
                                         </div>
                                         <div>
-                                            <p className="font-heading font-bold text-primary group-hover:text-secondary-dark transition-colors">{product.title}</p>
-                                            <p className="text-xs text-neutral-gray mt-0.5 font-medium">SKU-{product._id.toString().substring(0, 6)}</p>
+                                            <p className="font-heading font-bold text-[#0a4019] group-hover:text-[#B8A68A] transition-colors">{product.title}</p>
+                                            <p className="text-xs text-[#6B6B6B] mt-0.5 font-medium">SKU-{product._id.toString().substring(0, 6)}</p>
                                         </div>
                                     </div>
                                 </td>
@@ -108,11 +109,11 @@ const ProductTable = ({ products, onEdit, onDelete }) => {
                                 </td>
                                 <td className="px-6 py-5">
                                     <div className="flex flex-col">
-                                        <span className="font-bold text-primary">
-                                            ${product.salePrice ?? product.price}
+                                        <span className="font-bold text-[#0a4019]">
+                                            {formatPrice(product.salePrice ?? product.price)}
                                         </span>
                                         {product.salePrice && (
-                                            <span className="text-[10px] text-neutral-400 line-through">${product.price}</span>
+                                            <span className="text-[10px] text-neutral-400 line-through">{formatPrice(product.price)}</span>
                                         )}
                                     </div>
                                 </td>
@@ -139,7 +140,7 @@ const ProductTable = ({ products, onEdit, onDelete }) => {
                                     <div className="flex items-center justify-end gap-2">
                                         <button
                                             onClick={() => onEdit(product)}
-                                            className="p-2 text-neutral-400 hover:text-primary hover:bg-neutral-beige rounded-xl transition-all"
+                                            className="p-2 text-neutral-400 hover:text-[#0a4019] hover:bg-[#F5F3F0] rounded-xl transition-all"
                                             title="Edit Product"
                                         >
                                             <Edit size={18} />
@@ -151,7 +152,7 @@ const ProductTable = ({ products, onEdit, onDelete }) => {
                                         >
                                             <Trash2 size={18} />
                                         </button>
-                                        <button className="p-2 text-neutral-400 hover:text-primary rounded-xl transition-all opacity-0 group-hover:opacity-100">
+                                        <button className="p-2 text-neutral-400 hover:text-[#0a4019] rounded-xl transition-all opacity-0 group-hover:opacity-100">
                                             <MoreVertical size={18} />
                                         </button>
                                     </div>

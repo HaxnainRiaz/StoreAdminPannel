@@ -18,8 +18,8 @@ const cormorant = Cormorant_Garamond({
 });
 
 export const metadata = {
-  title: "Luminelle Organics | Admin Panel",
-  description: "Administrative dashboard for Luminelle Organics",
+  title: "Luminelle | Admin Panel",
+  description: "Administrative dashboard for Luminelle",
 };
 
 export default function RootLayout({ children }) {

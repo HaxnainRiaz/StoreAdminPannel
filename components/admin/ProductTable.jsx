@@ -1,9 +1,9 @@
 "use client";
 
 import { Edit, Trash2, Globe, EyeOff, FileText, MoreVertical } from "lucide-react";
-import Image from "next/image";
 import { useState } from "react";
 import { formatPrice } from "@/lib/utils";
+import AdminTable from "./AdminTable";
 
 const ProductTable = ({ products, onEdit, onDelete }) => {
     const [selectedProducts, setSelectedProducts] = useState([]);
@@ -56,111 +56,140 @@ const ProductTable = ({ products, onEdit, onDelete }) => {
                 </div>
             )}
 
-            <div className="overflow-x-auto bg-white rounded-2xl shadow-[0_4px_20px_rgba(11,47,38,0.08)] border border-[#F5F3F0]">
-                <table className="w-full text-left border-collapse">
-                    <thead className="bg-[#F5F3F0]/30 text-[#6B6B6B] uppercase text-[10px] tracking-[0.15em] border-b border-[#F5F3F0]">
-                        <tr>
-                            <th className="px-6 py-5 w-10">
+            <div className="bg-white rounded-2xl shadow-[0_4px_20px_rgba(11,47,38,0.08)] border border-[#F5F3F0] overflow-hidden">
+                <AdminTable
+                    rowClassName={(product) => selectedProducts.includes(product._id) ? 'bg-[#d3d3d3]/5' : ''}
+                    columns={[
+                        {
+                            key: 'select',
+                            label: (
                                 <input
                                     type="checkbox"
                                     onChange={toggleSelectAll}
                                     checked={selectedProducts.length === products.length && products.length > 0}
                                     className="w-4 h-4 rounded border-neutral-300 text-[#0a4019] focus:ring-[#0a4019] cursor-pointer"
                                 />
-                            </th>
-                            <th className="px-6 py-5 font-bold">Product</th>
-                            <th className="px-6 py-5 font-bold">Category</th>
-                            <th className="px-6 py-5 font-bold">Price</th>
-                            <th className="px-6 py-5 font-bold">Stock</th>
-                            <th className="px-6 py-5 font-bold">Status</th>
-                            <th className="px-6 py-5 font-bold text-right">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-[#F5F3F0]">
-                        {products.map((product) => (
-                            <tr key={product._id} className={`group hover:bg-[#FDFCFB] transition-all duration-300 ${selectedProducts.includes(product._id) ? 'bg-[#d3d3d3]/5' : ''}`}>
-                                <td className="px-6 py-5">
-                                    <input
-                                        type="checkbox"
-                                        checked={selectedProducts.includes(product._id)}
-                                        onChange={() => toggleSelect(product._id)}
-                                        className="w-4 h-4 rounded border-neutral-300 text-[#0a4019] focus:ring-[#0a4019] cursor-pointer"
-                                    />
-                                </td>
-                                <td className="px-6 py-5">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-14 h-14 relative rounded-xl overflow-hidden bg-neutral-100 shrink-0 border border-[#F5F3F0]/50 group-hover:shadow-md transition-shadow">
-                                            <img
-                                                src={product.images[0] || "https://placehold.co/400x400?text=Product"}
-                                                alt={product.title}
-                                                className="w-full h-full object-cover"
-                                            />
-                                        </div>
-                                        <div>
-                                            <p className="font-heading font-bold text-[#0a4019] group-hover:text-[#B8A68A] transition-colors">{product.title}</p>
-                                            <p className="text-xs text-[#6B6B6B] mt-0.5 font-medium">SKU-{product._id.toString().substring(0, 6)}</p>
-                                        </div>
+                            ),
+                            className: "w-10 px-6 py-5",
+                            sortable: false,
+                            hideOnMobile: true,
+                            render: (product) => (
+                                <input
+                                    type="checkbox"
+                                    checked={selectedProducts.includes(product._id)}
+                                    onChange={() => toggleSelect(product._id)}
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="w-4 h-4 rounded border-neutral-300 text-[#0a4019] focus:ring-[#0a4019] cursor-pointer"
+                                />
+                            )
+                        },
+                        {
+                            key: 'title',
+                            label: 'Product',
+                            className: "px-6 py-5",
+                            render: (product) => (
+                                <div className="flex items-center gap-4">
+                                    <div className="w-14 h-14 relative rounded-xl overflow-hidden bg-neutral-100 shrink-0 border border-[#F5F3F0]/50 shadow-sm">
+                                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                                        <img
+                                            src={product.images[0] || "https://placehold.co/400x400?text=Product"}
+                                            alt={product.title}
+                                            className="w-full h-full object-cover"
+                                        />
                                     </div>
-                                </td>
-                                <td className="px-6 py-5">
-                                    <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 bg-neutral-50 px-3 py-1 rounded-full border border-neutral-100">
-                                        {product.category?.title || "No Category"}
+                                    <div>
+                                        <p className="font-heading font-bold text-[#0a4019]">{product.title}</p>
+                                        <p className="text-xs text-[#6B6B6B] mt-0.5 font-medium">SKU-{product._id.toString().substring(0, 6)}</p>
+                                    </div>
+                                </div>
+                            )
+                        },
+                        {
+                            key: 'category',
+                            label: 'Category',
+                            className: "px-6 py-5",
+                            hideOnMobile: true,
+                            render: (product) => (
+                                <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 bg-neutral-50 px-3 py-1 rounded-full border border-neutral-100">
+                                    {product.category?.title || "No Category"}
+                                </span>
+                            )
+                        },
+                        {
+                            key: 'price',
+                            label: 'Price',
+                            className: "px-6 py-5",
+                            render: (product) => (
+                                <div className="flex flex-col">
+                                    <span className="font-bold text-[#0a4019]">
+                                        {formatPrice(product.salePrice ?? product.price)}
                                     </span>
-                                </td>
-                                <td className="px-6 py-5">
-                                    <div className="flex flex-col">
-                                        <span className="font-bold text-[#0a4019]">
-                                            {formatPrice(product.salePrice ?? product.price)}
-                                        </span>
-                                        {product.salePrice && (
-                                            <span className="text-[10px] text-neutral-400 line-through">{formatPrice(product.price)}</span>
-                                        )}
-                                    </div>
-                                </td>
-                                <td className="px-6 py-5">
-                                    <div className="flex flex-col">
-                                        <span className={`text-sm font-bold ${product.stock < 5 ? 'text-red-500' : 'text-neutral-700'}`}>
-                                            {product.stock}
-                                        </span>
-                                        <span className="text-[10px] text-neutral-400 font-medium tracking-wider uppercase">Units</span>
-                                    </div>
-                                </td>
-                                <td className="px-6 py-5">
-                                    <span
-                                        className={`
-                                            inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider border
-                                            ${getStatusStyles(product.status)}
-                                        `}
+                                    {product.salePrice && (
+                                        <span className="text-[10px] text-neutral-400 line-through">{formatPrice(product.price)}</span>
+                                    )}
+                                </div>
+                            )
+                        },
+                        {
+                            key: 'stock',
+                            label: 'Stock',
+                            className: "px-6 py-5",
+                            render: (product) => (
+                                <div className="flex flex-col">
+                                    <span className={`text-sm font-bold ${product.stock < 5 ? 'text-red-500' : 'text-neutral-700'}`}>
+                                        {product.stock}
+                                    </span>
+                                    <span className="text-[10px] text-neutral-400 font-medium tracking-wider uppercase">Units</span>
+                                </div>
+                            )
+                        },
+                        {
+                            key: 'status',
+                            label: 'Status',
+                            className: "px-6 py-5",
+                            render: (product) => (
+                                <span
+                                    className={`
+                                        inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider border
+                                        ${getStatusStyles(product.status)}
+                                    `}
+                                >
+                                    {getStatusIcon(product.status)}
+                                    {product.status}
+                                </span>
+                            )
+                        },
+                        {
+                            key: 'actions',
+                            label: 'Actions',
+                            align: 'right',
+                            className: "px-6 py-5",
+                            render: (product) => (
+                                <div className="flex items-center justify-end gap-2">
+                                    <button
+                                        onClick={() => onEdit(product)}
+                                        className="p-2 text-neutral-400 hover:text-[#0a4019] hover:bg-[#F5F3F0] rounded-xl transition-all"
+                                        title="Edit Product"
                                     >
-                                        {getStatusIcon(product.status)}
-                                        {product.status}
-                                    </span>
-                                </td>
-                                <td className="px-6 py-5">
-                                    <div className="flex items-center justify-end gap-2">
-                                        <button
-                                            onClick={() => onEdit(product)}
-                                            className="p-2 text-neutral-400 hover:text-[#0a4019] hover:bg-[#F5F3F0] rounded-xl transition-all"
-                                            title="Edit Product"
-                                        >
-                                            <Edit size={18} />
-                                        </button>
-                                        <button
-                                            onClick={() => onDelete(product._id)}
-                                            className="p-2 text-neutral-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
-                                            title="Delete Product"
-                                        >
-                                            <Trash2 size={18} />
-                                        </button>
-                                        <button className="p-2 text-neutral-400 hover:text-[#0a4019] rounded-xl transition-all opacity-0 group-hover:opacity-100">
-                                            <MoreVertical size={18} />
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+                                        <Edit size={18} />
+                                    </button>
+                                    <button
+                                        onClick={() => onDelete(product._id)}
+                                        className="p-2 text-neutral-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
+                                        title="Delete Product"
+                                    >
+                                        <Trash2 size={18} />
+                                    </button>
+                                    <button className="p-2 text-neutral-400 hover:text-[#0a4019] rounded-xl transition-all">
+                                        <MoreVertical size={18} />
+                                    </button>
+                                </div>
+                            )
+                        }
+                    ]}
+                    data={products}
+                    emptyMessage="No products found in the catalog."
+                />
             </div>
         </div>
     );

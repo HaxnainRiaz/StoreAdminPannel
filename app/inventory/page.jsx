@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { Search, AlertTriangle, CheckCircle, Package, Trash2, Plus, ArrowLeftRight, Save } from "lucide-react";
 import { SearchBar, Button } from "@/components/ui";
 import Link from "next/link";
+import AdminTable from "@/components/admin/AdminTable";
 
 export default function InventoryPage() {
     const { products, updateProduct, deleteProduct, loading } = useAdmin();
@@ -83,7 +84,7 @@ export default function InventoryPage() {
                     <p className="text-[#6B6B6B] text-sm font-medium mt-1">Global logistics and supply chain optimization</p>
                 </div>
 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 md:gap-4">
                     <Button
                         variant="secondary"
                         onClick={handleBatchUpdate}
@@ -138,102 +139,129 @@ export default function InventoryPage() {
                         className="max-w-md shadow-inner"
                     />
                 </div>
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left">
-                        <thead className="bg-[#F5F3F0]/10 text-[10px] uppercase text-neutral-400 tracking-[0.25em] font-bold border-b border-[#F5F3F0]">
-                            <tr>
-                                <th className="p-8">Assigned Asset</th>
-                                <th className="p-8">Registry ID</th>
-                                <th className="p-8 text-center">Available Units</th>
-                                <th className="p-8 text-center">Logistics Status</th>
-                                <th className="p-8 text-right">Operations</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-[#F5F3F0]/50">
-                            {filteredProducts.map((product) => {
-                                const currentStock = localStocks[product._id] ?? product.stock;
-                                const hasChanged = currentStock !== product.stock;
+                <div className="p-4 md:p-8">
+                    <AdminTable
+                        columns={[
+                            {
+                                key: 'title',
+                                label: 'Assigned Asset',
+                                className: 'p-4',
+                                render: (product) => (
+                                    <div className="flex items-center gap-5">
+                                        <div className="w-16 h-16 bg-neutral-100 rounded-2xl overflow-hidden relative border border-[#F5F3F0] shadow-inner group-hover:scale-110 transition-transform">
+                                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                                            <img src={product.images[0]} alt={product.title} className="w-full h-full object-cover" />
+                                        </div>
+                                        <div>
+                                            <p className="font-heading font-bold text-[#0a4019] text-base italic leading-tight mb-1">{product.title}</p>
+                                            <p className="text-[10px] font-bold text-[#d3d3d3] uppercase tracking-widest">{product.category?.name || "Uncategorized"}</p>
+                                        </div>
+                                    </div>
+                                )
+                            },
+                            {
+                                key: '_id',
+                                label: 'Registry ID',
+                                className: 'p-4',
+                                hideOnMobile: true,
+                                render: (product) => (
+                                    <span className="text-[10px] font-mono text-neutral-400 font-bold bg-neutral-50 px-3 py-1.5 rounded-lg border border-neutral-100">
+                                        REF:{product._id.toString().substring(18).toUpperCase()}
+                                    </span>
+                                )
+                            },
+                            {
+                                key: 'stock',
+                                label: 'Available Units',
+                                align: 'center',
+                                className: 'p-4',
+                                render: (product) => {
+                                    const currentStock = localStocks[product._id] ?? product.stock;
+                                    const hasChanged = currentStock !== product.stock;
 
-                                return (
-                                    <tr key={product._id} className={`hover:bg-[#FDFCFB]/20 transition-all duration-300 group ${hasChanged ? 'bg-[#d3d3d3]/5' : ''}`}>
-                                        <td className="p-8">
-                                            <div className="flex items-center gap-5">
-                                                <div className="w-16 h-16 bg-neutral-100 rounded-2xl overflow-hidden relative border border-[#F5F3F0] shadow-inner group-hover:scale-110 transition-transform">
-                                                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                                                    <img src={product.images[0]} alt={product.title} className="w-full h-full object-cover" />
-                                                </div>
-                                                <div>
-                                                    <p className="font-heading font-bold text-[#0a4019] text-base italic leading-tight mb-1">{product.title}</p>
-                                                    <p className="text-[10px] font-bold text-[#d3d3d3] uppercase tracking-widest">{product.category?.name || "Uncategorized"}</p>
-                                                </div>
+                                    return (
+                                        <div className="flex items-center justify-center gap-4">
+                                            <button
+                                                className="w-10 h-10 rounded-xl border border-neutral-200 hover:bg-white hover:shadow-lg transition-all flex items-center justify-center text-[#0a4019] font-bold shadow-sm active:scale-90 bg-neutral-50"
+                                                onClick={() => handleLocalStockChange(product._id, currentStock - 1)}
+                                            >
+                                                -
+                                            </button>
+                                            <div className="relative">
+                                                <input
+                                                    type="number"
+                                                    value={currentStock}
+                                                    onChange={(e) => handleLocalStockChange(product._id, e.target.value)}
+                                                    className={`w-20 text-center border rounded-xl py-2 font-heading font-bold text-[#0a4019] text-lg focus:outline-none transition-all duration-300 shadow-sm ${hasChanged ? 'border-[#d3d3d3] bg-[#d3d3d3]/5 ring-2 ring-[#d3d3d3]/20' : 'border-[#F5F3F0] bg-[#FDFCFB]'}`}
+                                                />
                                             </div>
-                                        </td>
-                                        <td className="p-8">
-                                            <span className="text-[10px] font-mono text-neutral-400 font-bold bg-neutral-50 px-3 py-1.5 rounded-lg border border-neutral-100">
-                                                REF:{product._id.toString().substring(18).toUpperCase()}
-                                            </span>
-                                        </td>
-                                        <td className="p-8">
-                                            <div className="flex items-center justify-center gap-4">
-                                                <button
-                                                    className="w-10 h-10 rounded-xl border border-neutral-200 hover:bg-white hover:shadow-lg transition-all flex items-center justify-center text-[#0a4019] font-bold shadow-sm active:scale-90 bg-neutral-50"
-                                                    onClick={() => handleLocalStockChange(product._id, currentStock - 1)}
-                                                >
-                                                    -
-                                                </button>
-                                                <div className="relative">
-                                                    <input
-                                                        type="number"
-                                                        value={currentStock}
-                                                        onChange={(e) => handleLocalStockChange(product._id, e.target.value)}
-                                                        className={`w-20 text-center border rounded-xl py-2 font-heading font-bold text-[#0a4019] text-lg focus:outline-none transition-all duration-300 shadow-sm ${hasChanged ? 'border-[#d3d3d3] bg-[#d3d3d3]/5 ring-2 ring-[#d3d3d3]/20' : 'border-[#F5F3F0] bg-[#FDFCFB]'}`}
-                                                    />
-                                                </div>
-                                                <button
-                                                    className="w-10 h-10 rounded-xl border border-neutral-200 hover:bg-white hover:shadow-lg transition-all flex items-center justify-center text-[#0a4019] font-bold shadow-sm active:scale-90 bg-neutral-50"
-                                                    onClick={() => handleLocalStockChange(product._id, currentStock + 1)}
-                                                >
-                                                    +
-                                                </button>
-                                            </div>
-                                        </td>
-                                        <td className="p-8 text-center">
-                                            <span className={`
+                                            <button
+                                                className="w-10 h-10 rounded-xl border border-neutral-200 hover:bg-white hover:shadow-lg transition-all flex items-center justify-center text-[#0a4019] font-bold shadow-sm active:scale-90 bg-neutral-50"
+                                                onClick={() => handleLocalStockChange(product._id, currentStock + 1)}
+                                            >
+                                                +
+                                            </button>
+                                        </div>
+                                    );
+                                }
+                            },
+                            {
+                                key: 'status',
+                                label: 'Logistics Status',
+                                align: 'center',
+                                className: 'p-4',
+                                render: (product) => {
+                                    const currentStock = localStocks[product._id] ?? product.stock;
+
+                                    return (
+                                        <span className={`
                                             inline-flex items-center gap-2 px-5 py-2 rounded-full text-[9px] font-bold uppercase tracking-[0.2em] border shadow-sm
                                             ${currentStock === 0 ? 'bg-red-50 text-red-700 border-red-200' : ''}
                                             ${currentStock < 10 && currentStock > 0 ? 'bg-orange-50 text-orange-700 border-orange-200' : ''}
                                             ${currentStock >= 10 ? 'bg-green-50 text-green-700 border-green-200' : ''}
                                         `}>
-                                                <div className={`w-1.5 h-1.5 rounded-full ${currentStock === 0 ? 'bg-red-500' : (currentStock < 10 ? 'bg-orange-500' : 'bg-green-500')}`} />
-                                                {currentStock === 0 ? 'Inert' : (currentStock < 10 ? 'Unstable' : 'Certified')}
-                                            </span>
-                                        </td>
-                                        <td className="p-8 text-right">
-                                            <div className="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-all">
-                                                {hasChanged && (
-                                                    <button
-                                                        onClick={() => handleSaveStock(product._id)}
-                                                        disabled={isUpdating}
-                                                        className="p-3 bg-[#d3d3d3]/20 text-[#0a4019] rounded-xl hover:bg-[#d3d3d3] transition-all shadow-sm"
-                                                        title="Save Individual Change"
-                                                    >
-                                                        <Save size={16} />
-                                                    </button>
-                                                )}
+                                            <div className={`w-1.5 h-1.5 rounded-full ${currentStock === 0 ? 'bg-red-500' : (currentStock < 10 ? 'bg-orange-500' : 'bg-green-500')}`} />
+                                            {currentStock === 0 ? 'Inert' : (currentStock < 10 ? 'Unstable' : 'Certified')}
+                                        </span>
+                                    );
+                                }
+                            },
+                            {
+                                key: 'actions',
+                                label: 'Operations',
+                                align: 'right',
+                                className: 'p-4',
+                                render: (product) => {
+                                    const currentStock = localStocks[product._id] ?? product.stock;
+                                    const hasChanged = currentStock !== product.stock;
+
+                                    return (
+                                        <div className="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-all">
+                                            {hasChanged && (
                                                 <button
-                                                    onClick={() => confirmDelete(product._id)}
-                                                    className="p-3 text-neutral-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all shadow-sm border border-transparent hover:border-red-100"
-                                                    title="Decommission Asset"
+                                                    onClick={() => handleSaveStock(product._id)}
+                                                    disabled={isUpdating}
+                                                    className="p-3 bg-[#d3d3d3]/20 text-[#0a4019] rounded-xl hover:bg-[#d3d3d3] transition-all shadow-sm"
+                                                    title="Save Individual Change"
                                                 >
-                                                    <Trash2 size={16} />
+                                                    <Save size={16} />
                                                 </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                );
-                            })}
-                        </tbody>
-                    </table>
+                                            )}
+                                            <button
+                                                onClick={() => confirmDelete(product._id)}
+                                                className="p-3 text-neutral-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all shadow-sm border border-transparent hover:border-red-100"
+                                                title="Decommission Asset"
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
+                                        </div>
+                                    );
+                                }
+                            }
+                        ]}
+                        data={filteredProducts}
+                        emptyMessage="No inventory assets found matching criteria."
+                    />
                 </div>
             </div>
 

@@ -139,12 +139,12 @@ export default function DiscountsPage() {
             {/* Create Code Modal */}
             {showModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0a4019]/40 backdrop-blur-xl animate-fadeIn">
-                    <div className="bg-white rounded-[3.5rem] w-full max-w-xl p-12 shadow-[0_16px_60px_rgba(11,47,38,0.15)] border border-white animate-scaleIn relative overflow-hidden">
+                    <div className="bg-white rounded-[3.5rem] w-full max-w-xl p-6 lg:p-8 shadow-[0_16px_60px_rgba(11,47,38,0.15)] border border-white animate-scaleIn relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-48 h-48 bg-[#d3d3d3]/10 rounded-full -mr-24 -mt-24" />
 
-                        <div className="flex justify-between items-start mb-10 relative">
+                        <div className="flex justify-between items-start relative">
                             <div>
-                                <h2 className="text-4xl font-heading font-bold text-[#0a4019] italic">Forge Reward</h2>
+                                <h2 className="text-2xl md:text-3xl font-heading font-bold text-[#0a4019] italic">Forge Reward</h2>
                                 <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-[0.3em] mt-2">Promotional Engine v2.1</p>
                             </div>
                             <button onClick={() => setShowModal(false)} className="p-3 hover:bg-neutral-50 rounded-full transition-colors text-neutral-300">
@@ -152,8 +152,8 @@ export default function DiscountsPage() {
                             </button>
                         </div>
 
-                        <form onSubmit={handleCreate} className="space-y-8 relative">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <form onSubmit={handleCreate} className="space-y-3 md:space-y-6 lg:space-y-8 relative">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6 lg:gap-8">
                                 <Input
                                     label="Identity Code (UPPERCASE) *"
                                     required

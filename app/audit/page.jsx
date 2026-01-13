@@ -2,6 +2,7 @@
 
 import { useAdmin } from "@/context/AdminContext";
 import { ClipboardList, Search, Clock, Shield, Activity, User } from "lucide-react";
+import AdminTable from "@/components/admin/AdminTable";
 import { useState } from "react";
 
 export default function AuditLogsPage() {
@@ -72,67 +73,75 @@ export default function AuditLogsPage() {
                 </div>
             </div>
 
-            <div className="bg-white rounded-[2.5rem] shadow-[0_4px_20px_rgba(11,47,38,0.08)] border border-[#F5F3F0] overflow-hidden">
-                <table className="w-full text-left border-collapse">
-                    <thead className="bg-[#F5F3F0]/20 border-b border-[#F5F3F0]">
-                        <tr>
-                            <th className="px-8 py-6 text-[10px] font-bold text-neutral-400 uppercase tracking-[0.2em]">Temporal Node</th>
-                            <th className="px-8 py-6 text-[10px] font-bold text-neutral-400 uppercase tracking-[0.2em]">Operation</th>
-                            <th className="px-8 py-6 text-[10px] font-bold text-neutral-400 uppercase tracking-[0.2em]">Data Payload</th>
-                            <th className="px-8 py-6 text-[10px] font-bold text-neutral-400 uppercase tracking-[0.2em]">Curator</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-[#F5F3F0]/50">
-                        {filteredLogs.map((log) => (
-                            <tr key={log._id} className="hover:bg-[#FDFCFB]/20 transition-all duration-300 group">
-                                <td className="px-8 py-6">
-                                    <div className="flex items-center gap-3">
-                                        <div className="p-2 bg-neutral-50 rounded-lg text-neutral-400">
-                                            <Clock size={14} />
-                                        </div>
-                                        <div>
-                                            <p className="text-[11px] font-bold text-[#0a4019]">{new Date(log.createdAt).toLocaleDateString()}</p>
-                                            <p className="text-[10px] text-neutral-400 font-medium">{new Date(log.createdAt).toLocaleTimeString()}</p>
-                                        </div>
+            <div className="bg-white rounded-[2.5rem] shadow-[0_4px_20px_rgba(11,47,38,0.08)] border border-[#F5F3F0] p-4 md:p-8">
+                <AdminTable
+                    columns={[
+                        {
+                            key: 'createdAt',
+                            label: 'Temporal Node',
+                            className: 'px-8 py-6',
+                            render: (log) => (
+                                <div className="flex items-center gap-3">
+                                    <div className="p-2 bg-neutral-50 rounded-lg text-neutral-400">
+                                        <Clock size={14} />
                                     </div>
-                                </td>
-                                <td className="px-8 py-6">
-                                    <div className="flex items-center gap-2">
-                                        <div className={`w-1.5 h-1.5 rounded-full ${log.action.includes('Delete') ? 'bg-red-500' : (log.action.includes('Create') ? 'bg-green-500' : 'bg-[#d3d3d3]')}`} />
-                                        <span className="text-xs font-bold text-[#0a4019] uppercase tracking-wider italic">{log.action}</span>
+                                    <div>
+                                        <p className="text-[11px] font-bold text-[#0a4019]">{new Date(log.createdAt).toLocaleDateString()}</p>
+                                        <p className="text-[10px] text-neutral-400 font-medium">{new Date(log.createdAt).toLocaleTimeString()}</p>
                                     </div>
-                                </td>
-                                <td className="px-8 py-6">
-                                    <p className="text-xs text-[#6B6B6B] max-w-md font-medium italic leading-relaxed">
-                                        {log.details}
-                                    </p>
-                                </td>
-                                <td className="px-8 py-6">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-full bg-[#0a4019]/10 flex items-center justify-center text-[#0a4019] border border-[#0a4019]/5 hover:bg-[#0a4019] hover:text-[#d3d3d3] transition-all duration-300">
-                                            <Shield size={14} />
-                                        </div>
-                                        <div>
-                                            <span className="text-[10px] font-bold text-[#0a4019] uppercase tracking-widest block">{log.admin?.name || log.admin || "System Agent"}</span>
-                                            <span className="text-[9px] text-neutral-300 font-medium">{log.admin?.email || "Encrypted Identity"}</span>
-                                        </div>
+                                </div>
+                            )
+                        },
+                        {
+                            key: 'action',
+                            label: 'Operation',
+                            className: 'px-8 py-6',
+                            render: (log) => (
+                                <div className="flex items-center gap-2">
+                                    <div className={`w-1.5 h-1.5 rounded-full ${log.action.includes('Delete') ? 'bg-red-500' : (log.action.includes('Create') ? 'bg-green-500' : 'bg-[#d3d3d3]')}`} />
+                                    <span className="text-xs font-bold text-[#0a4019] uppercase tracking-wider italic">{log.action}</span>
+                                </div>
+                            )
+                        },
+                        {
+                            key: 'details',
+                            label: 'Data Payload',
+                            className: 'px-8 py-6',
+                            render: (log) => (
+                                <p className="text-xs text-[#6B6B6B] max-w-md font-medium italic leading-relaxed">
+                                    {log.details}
+                                </p>
+                            )
+                        },
+                        {
+                            key: 'admin',
+                            label: 'Curator',
+                            className: 'px-8 py-6',
+                            hideOnMobile: true,
+                            render: (log) => (
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-full bg-[#0a4019]/10 flex items-center justify-center text-[#0a4019] border border-[#0a4019]/5 hover:bg-[#0a4019] hover:text-[#d3d3d3] transition-all duration-300">
+                                        <Shield size={14} />
                                     </div>
-                                </td>
-                            </tr>
-                        ))}
-                        {filteredLogs.length === 0 && (
-                            <tr>
-                                <td colSpan="4" className="px-8 py-32 text-center">
-                                    <div className="w-20 h-20 bg-neutral-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                                        <Activity className="text-neutral-200" size={32} />
+                                    <div>
+                                        <span className="text-[10px] font-bold text-[#0a4019] uppercase tracking-widest block">{log.admin?.name || log.admin || "System Agent"}</span>
+                                        <span className="text-[9px] text-neutral-300 font-medium">{log.admin?.email || "Encrypted Identity"}</span>
                                     </div>
-                                    <h3 className="text-xl font-heading font-bold text-[#0a4019] italic">No Events Detected</h3>
-                                    <p className="text-[#6B6B6B] max-w-xs mx-auto mt-2 font-medium">The system ledger is currently devoid of activities matching your parameters.</p>
-                                </td>
-                            </tr>
-                        )}
-                    </tbody>
-                </table>
+                                </div>
+                            )
+                        }
+                    ]}
+                    data={filteredLogs}
+                    emptyMessage={
+                        <div className="text-center py-10">
+                            <div className="w-20 h-20 bg-neutral-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                                <Activity className="text-neutral-200" size={32} />
+                            </div>
+                            <h3 className="text-xl font-heading font-bold text-[#0a4019] italic">No Events Detected</h3>
+                            <p className="text-[#6B6B6B] max-w-xs mx-auto mt-2 font-medium">The system ledger is currently devoid of activities matching your parameters.</p>
+                        </div>
+                    }
+                />
             </div>
 
             <div className="flex items-center justify-between px-4">

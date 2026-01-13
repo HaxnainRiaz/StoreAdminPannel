@@ -4,10 +4,11 @@ import { useAdmin } from "@/context/AdminContext";
 import { formatPrice } from "@/lib/utils";
 import { useState } from "react";
 import { SearchBar, Button } from "@/components/ui";
+import AdminTable from "@/components/admin/AdminTable";
 import { Mail, Phone, MapPin, Edit2, Save, X, User, Ban, ShieldCheck, History, ShoppingBag } from "lucide-react";
 
 export default function CustomersPage() {
-    const { customers, loading, refreshData, orders } = useAdmin();
+    const { customers, loading, updateCustomer, orders } = useAdmin();
     const [searchTerm, setSearchTerm] = useState("");
     const [viewingOrders, setViewingOrders] = useState(null);
 
@@ -24,16 +25,7 @@ export default function CustomersPage() {
 
     const toggleBanStatus = async (customer) => {
         const isBanned = customer.status === 'banned';
-        const API_URL = `${process.env.NEXT_PUBLIC_API_URL}/api`;
-        const res = await fetch(`${API_URL}/users/${customer._id}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${localStorage.getItem('token')}`
-            },
-            body: JSON.stringify({ status: isBanned ? 'active' : 'banned' })
-        });
-        if (res.ok) refreshData();
+        await updateCustomer(customer._id, { status: isBanned ? 'active' : 'banned' });
     };
 
     if (loading) {
@@ -61,88 +53,98 @@ export default function CustomersPage() {
                 />
             </div>
 
-            <div className="bg-white rounded-[2.5rem] shadow-[0_16px_60px_rgba(11,47,38,0.15)] border border-[#F5F3F0] overflow-hidden">
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left">
-                        <thead className="bg-[#F5F3F0]/10 text-[10px] uppercase text-neutral-400 font-bold tracking-[0.2em] border-b border-[#F5F3F0]">
-                            <tr>
-                                <th className="p-8">Customer Identity</th>
-                                <th className="p-8">Contact Protocol</th>
-                                <th className="p-8">Join Date</th>
-                                <th className="p-8">Estate Status</th>
-                                <th className="p-8 text-right">Operations</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-[#F5F3F0]/50">
-                            {filteredCustomers.length > 0 ? (
-                                filteredCustomers.map((customer) => (
-                                    <tr key={customer._id} className="group hover:bg-[#FDFCFB]/30 transition-all duration-300">
-                                        <td className="p-8">
-                                            <div className="flex items-center gap-4">
-                                                <div className="w-12 h-12 rounded-2xl bg-[#d3d3d3]/20 flex items-center justify-center text-[#0a4019] font-bold shadow-inner group-hover:scale-110 transition-transform">
-                                                    {customer.name.charAt(0)}
-                                                </div>
-                                                <div>
-                                                    <p className="font-bold text-[#0a4019] text-sm">{customer.name}</p>
-                                                    <p className="text-[10px] text-neutral-400 font-mono mt-0.5">#{customer._id.substring(18).toUpperCase()}</p>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td className="p-8">
-                                            <div className="flex items-center gap-2 text-xs font-medium text-[#6B6B6B]">
-                                                <Mail size={14} className="text-[#d3d3d3]" />
-                                                <span className="group-hover:text-[#0a4019] transition-colors">{customer.email}</span>
-                                            </div>
-                                        </td>
-                                        <td className="p-8">
-                                            <span className="text-xs font-bold text-[#6B6B6B] bg-neutral-100 px-3 py-1 rounded-full border border-neutral-200">
-                                                {new Date(customer.createdAt).toLocaleDateString(undefined, { month: 'short', year: 'numeric', day: 'numeric' })}
-                                            </span>
-                                        </td>
-                                        <td className="p-8">
-                                            <span className={`
-                                                inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[9px] font-bold uppercase tracking-widest border
-                                                ${customer.status === 'banned'
-                                                    ? 'bg-red-50 text-red-700 border-red-200'
-                                                    : 'bg-green-50 text-green-700 border-green-200'}
-                                            `}>
-                                                <div className={`w-1.5 h-1.5 rounded-full ${customer.status === 'banned' ? 'bg-red-500' : 'bg-green-500'}`} />
-                                                {customer.status || 'Active'}
-                                            </span>
-                                        </td>
-                                        <td className="p-8">
-                                            <div className="flex items-center justify-end gap-3">
-                                                <button
-                                                    onClick={() => setViewingOrders(customer)}
-                                                    className="p-3 text-neutral-300 hover:text-[#0a4019] hover:bg-[#FDFCFB] rounded-xl transition-all"
-                                                    title="View Order History"
-                                                >
-                                                    <History size={18} />
-                                                </button>
-                                                <button
-                                                    onClick={() => toggleBanStatus(customer)}
-                                                    className={`p-3 rounded-xl transition-all ${customer.status === 'banned' ? 'text-green-600 hover:bg-green-50' : 'text-neutral-300 hover:text-red-600 hover:bg-red-50'}`}
-                                                    title={customer.status === 'banned' ? 'Unban User' : 'Ban User'}
-                                                >
-                                                    {customer.status === 'banned' ? <ShieldCheck size={18} /> : <Ban size={18} />}
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))
-                            ) : (
-                                <tr>
-                                    <td colSpan="5" className="p-20 text-center">
-                                        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-neutral-50 mb-4">
-                                            <User className="text-neutral-200" size={32} />
-                                        </div>
-                                        <p className="text-neutral-300 text-sm font-medium">No clients identified in this sector.</p>
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
-                </div>
+            <div className="bg-white rounded-[2.5rem] shadow-[0_16px_60px_rgba(11,47,38,0.15)] border border-[#F5F3F0] p-4 md:p-8">
+                <AdminTable
+                    columns={[
+                        {
+                            key: 'name',
+                            label: 'Customer Identity',
+                            className: 'p-4',
+                            render: (customer) => (
+                                <div className="flex items-center gap-4">
+                                    <div className="w-12 h-12 rounded-2xl bg-[#d3d3d3]/20 flex items-center justify-center text-[#0a4019] font-bold shadow-inner">
+                                        {customer.name.charAt(0)}
+                                    </div>
+                                    <div>
+                                        <p className="font-bold text-[#0a4019] text-sm">{customer.name}</p>
+                                        <p className="text-[10px] text-neutral-400 font-mono mt-0.5">#{customer._id.substring(18).toUpperCase()}</p>
+                                    </div>
+                                </div>
+                            )
+                        },
+                        {
+                            key: 'email',
+                            label: 'Contact Protocol',
+                            className: 'p-4',
+                            hideOnMobile: true,
+                            render: (customer) => (
+                                <div className="flex items-center gap-2 text-xs font-medium text-[#6B6B6B]">
+                                    <Mail size={14} className="text-[#d3d3d3]" />
+                                    <span>{customer.email}</span>
+                                </div>
+                            )
+                        },
+                        {
+                            key: 'createdAt',
+                            label: 'Join Date',
+                            className: 'p-4',
+                            render: (customer) => (
+                                <span className="text-xs font-bold text-[#6B6B6B] bg-neutral-100 px-3 py-1 rounded-full border border-neutral-200">
+                                    {new Date(customer.createdAt).toLocaleDateString(undefined, { month: 'short', year: 'numeric', day: 'numeric' })}
+                                </span>
+                            )
+                        },
+                        {
+                            key: 'status',
+                            label: 'Estate Status',
+                            className: 'p-4',
+                            render: (customer) => (
+                                <span className={`
+                                    inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[9px] font-bold uppercase tracking-widest border
+                                    ${customer.status === 'banned'
+                                        ? 'bg-red-50 text-red-700 border-red-200'
+                                        : 'bg-green-50 text-green-700 border-green-200'}
+                                `}>
+                                    <div className={`w-1.5 h-1.5 rounded-full ${customer.status === 'banned' ? 'bg-red-500' : 'bg-green-500'}`} />
+                                    {customer.status || 'Active'}
+                                </span>
+                            )
+                        },
+                        {
+                            key: 'actions',
+                            label: 'Operations',
+                            align: 'right',
+                            className: 'p-4',
+                            render: (customer) => (
+                                <div className="flex items-center justify-end gap-3">
+                                    <button
+                                        onClick={(e) => { e.stopPropagation(); setViewingOrders(customer); }}
+                                        className="p-3 text-neutral-300 hover:text-[#0a4019] hover:bg-[#FDFCFB] rounded-xl transition-all"
+                                        title="View Order History"
+                                    >
+                                        <History size={18} />
+                                    </button>
+                                    <button
+                                        onClick={(e) => { e.stopPropagation(); toggleBanStatus(customer); }}
+                                        className={`p-3 rounded-xl transition-all ${customer.status === 'banned' ? 'text-green-600 hover:bg-green-50' : 'text-neutral-300 hover:text-red-600 hover:bg-red-50'}`}
+                                        title={customer.status === 'banned' ? 'Unban User' : 'Ban User'}
+                                    >
+                                        {customer.status === 'banned' ? <ShieldCheck size={18} /> : <Ban size={18} />}
+                                    </button>
+                                </div>
+                            )
+                        }
+                    ]}
+                    data={filteredCustomers}
+                    emptyMessage={
+                        <div className="text-center py-10">
+                            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-neutral-50 mb-4">
+                                <User className="text-neutral-200" size={32} />
+                            </div>
+                            <p className="text-neutral-300 text-sm font-medium">No clients identified in this sector.</p>
+                        </div>
+                    }
+                />
             </div>
 
             {/* History Modal Placeholder */}

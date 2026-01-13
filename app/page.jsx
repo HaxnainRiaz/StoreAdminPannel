@@ -2,6 +2,7 @@
 
 import { useAdmin } from "@/context/AdminContext";
 import StatsCard from "@/components/admin/StatsCard";
+import AdminTable from "@/components/admin/AdminTable";
 import { Package, ShoppingBag, AlertTriangle, Activity, MousePointer2, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { formatPrice } from "@/lib/utils";
@@ -44,7 +45,7 @@ export default function AdminDashboard() {
 
                 <div className="flex items-center gap-3">
                     <a
-                        href="https://skin-care-store-tau.vercel.app/" // Link to the customer storefront
+                        href="https://luminelle.org/" // Link to the customer storefront
                         target="_blank"
                         className="flex items-center gap-2 bg-[#0a4019] text-[#d3d3d3] px-5 py-3 rounded-2xl hover:bg-[#051712] transition-all shadow-lg shadow-[#0a4019]/20 font-bold text-xs uppercase tracking-widest active:scale-95"
                     >
@@ -86,14 +87,13 @@ export default function AdminDashboard() {
                 />
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Recent Orders (Main Column) */}
                 <div className="lg:col-span-2 space-y-6">
-                    <div className="bg-white rounded-[2rem] shadow-[0_4px_20px_rgba(11,47,38,0.08)] border border-[#F5F3F0] p-8 relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-[#d3d3d3]/5 rounded-full -mr-16 -mt-16 pointer-events-none" />
+                    <div className="bg-white rounded-[2rem] shadow-[0_4px_20px_rgba(11,47,38,0.08)] border border-[#F5F3F0] p-3 md:p-6 lg:p-8 relative overflow-auto">
                         <div className="flex items-center justify-between mb-8">
                             <div>
-                                <h2 className="text-2xl font-heading font-bold text-[#0a4019] italic">Latest Transactions</h2>
+                                <h2 className="text-lg font-heading font-bold text-[#0a4019] italic">Latest Transactions</h2>
                                 <p className="text-xs text-neutral-400 mt-1 font-medium">Real-time order processing stream</p>
                             </div>
                             <Link href="/orders" className="text-xs font-bold text-[#B8A68A] hover:text-[#0a4019] transition-all uppercase tracking-widest bg-[#d3d3d3]/10 px-4 py-2 rounded-full">
@@ -101,51 +101,62 @@ export default function AdminDashboard() {
                             </Link>
                         </div>
 
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-left">
-                                <thead className="text-[10px] uppercase text-neutral-400 font-bold tracking-[0.2em] border-b border-[#F5F3F0]">
-                                    <tr>
-                                        <th className="pb-4">Order Ref</th>
-                                        <th className="pb-4">Client</th>
-                                        <th className="pb-4">Amount</th>
-                                        <th className="pb-4 text-right">Progress</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-[#F5F3F0]/50">
-                                    {recentOrders.length > 0 ? (
-                                        recentOrders.map((order) => (
-                                            <tr key={order._id} className="group hover:bg-[#FDFCFB]/50 transition-colors">
-                                                <td className="py-5 font-mono text-[11px] text-[#0a4019]">{order._id.substring(18).toUpperCase()}</td>
-                                                <td className="py-5">
-                                                    <div className="flex flex-col">
-                                                        <span className="text-sm font-bold text-[#0a4019]">{order.customerName || order.shippingAddress?.fullName || order.user?.name || "Guest Customer"}</span>
-                                                        <span className="text-[10px] text-neutral-400">{new Date(order.createdAt).toLocaleDateString()}</span>
-                                                    </div>
-                                                </td>
-                                                <td className="py-5 font-bold text-[#0a4019]">{formatPrice(order.totalAmount)}</td>
-                                                <td className="py-5 text-right">
-                                                    <span className={`
-                                                        inline-block px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider border
-                                                        ${order.orderStatus === 'pending' ? 'bg-neutral-100 text-neutral-600 border-neutral-300' : ''}
-                                                        ${order.orderStatus === 'processing' ? 'bg-yellow-50 text-yellow-700 border-yellow-200' : ''}
-                                                        ${order.orderStatus === 'confirmed' ? 'bg-blue-50 text-blue-700 border-blue-200' : ''}
-                                                        ${order.orderStatus === 'shipped' ? 'bg-purple-50 text-purple-700 border-purple-200' : ''}
-                                                        ${order.orderStatus === 'delivered' ? 'bg-green-50 text-green-700 border-green-200' : ''}
-                                                        ${order.orderStatus === 'cancelled' ? 'bg-red-50 text-red-700 border-red-200' : ''}
-                                                    `}>
-                                                        {order.orderStatus}
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                        ))
-                                    ) : (
-                                        <tr>
-                                            <td colSpan="4" className="py-10 text-center text-neutral-300 italic text-sm">Waiting for first orders...</td>
-                                        </tr>
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
+                        <AdminTable
+                            columns={[
+                                {
+                                    key: '_id',
+                                    label: 'Order Ref',
+                                    render: (order) => (
+                                        <span className="font-mono text-[11px] text-[#0a4019]">
+                                            {order._id.substring(18).toUpperCase()}
+                                        </span>
+                                    )
+                                },
+                                {
+                                    key: 'customerName',
+                                    label: 'Client',
+                                    render: (order) => (
+                                        <div className="flex flex-col">
+                                            <span className="text-sm font-bold text-[#0a4019]">
+                                                {order.customerName || order.shippingAddress?.fullName || order.user?.name || "Guest Customer"}
+                                            </span>
+                                            <span className="text-[10px] text-neutral-400">
+                                                {new Date(order.createdAt).toLocaleDateString()}
+                                            </span>
+                                        </div>
+                                    )
+                                },
+                                {
+                                    key: 'totalAmount',
+                                    label: 'Amount',
+                                    render: (order) => (
+                                        <span className="font-bold text-[#0a4019]">
+                                            {formatPrice(order.totalAmount)}
+                                        </span>
+                                    )
+                                },
+                                {
+                                    key: 'orderStatus',
+                                    label: 'Progress',
+                                    align: 'right',
+                                    render: (order) => (
+                                        <span className={`
+                                            inline-block px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider border
+                                            ${order.orderStatus === 'pending' ? 'bg-neutral-100 text-neutral-600 border-neutral-300' : ''}
+                                            ${order.orderStatus === 'processing' ? 'bg-yellow-50 text-yellow-700 border-yellow-200' : ''}
+                                            ${order.orderStatus === 'confirmed' ? 'bg-blue-50 text-blue-700 border-blue-200' : ''}
+                                            ${order.orderStatus === 'shipped' ? 'bg-purple-50 text-purple-700 border-purple-200' : ''}
+                                            ${order.orderStatus === 'delivered' ? 'bg-green-50 text-green-700 border-green-200' : ''}
+                                            ${order.orderStatus === 'cancelled' ? 'bg-red-50 text-red-700 border-red-200' : ''}
+                                        `}>
+                                            {order.orderStatus}
+                                        </span>
+                                    )
+                                }
+                            ]}
+                            data={recentOrders}
+                            emptyMessage="Waiting for first orders..."
+                        />
                     </div>
 
                     {/* Quick Launch Panel */}

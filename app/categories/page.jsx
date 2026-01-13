@@ -3,27 +3,57 @@
 import { useAdmin } from "@/context/AdminContext";
 import { useState } from "react";
 import { SearchBar, Button, Input } from "@/components/ui";
-import { Plus, Edit2, Trash2, Tag, Layers, X, Save, ArrowLeft } from "lucide-react";
+import { Plus, Edit2, Trash2, Tag, Layers, X } from "lucide-react";
 
 export default function CategoriesPage() {
-    const { categories, addCategory, loading, refreshData } = useAdmin();
+    const { categories, addCategory, updateCategory, deleteCategory, loading } = useAdmin();
     const [searchTerm, setSearchTerm] = useState("");
-    const [isAdding, setIsAdding] = useState(false);
-    const [newCat, setNewCat] = useState({ title: "", description: "", slug: "" });
+
+    // Modal State
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalMode, setModalMode] = useState("create"); // 'create' or 'edit'
+    const [editingId, setEditingId] = useState(null);
+    const [formData, setFormData] = useState({ title: "", description: "", slug: "" });
 
     const filteredCategories = categories.filter(c =>
         (c.title || "").toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    const handleSave = async (e) => {
-        e.preventDefault();
-        const slug = newCat.slug || newCat.title.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
-        const success = await addCategory({ ...newCat, slug });
-        if (success) {
-            setIsAdding(false);
-            setNewCat({ title: "", description: "", slug: "" });
-            refreshData();
+    const openCreateModal = () => {
+        setModalMode("create");
+        setFormData({ title: "", description: "", slug: "" });
+        setEditingId(null);
+        setIsModalOpen(true);
+    };
+
+    const openEditModal = (category) => {
+        setModalMode("edit");
+        setFormData({
+            title: category.title,
+            description: category.description || "",
+            slug: category.slug || ""
+        });
+        setEditingId(category._id);
+        setIsModalOpen(true);
+    };
+
+    const handleDelete = async (id) => {
+        if (window.confirm("Are you sure you want to delete this collection? This action cannot be undone.")) {
+            await deleteCategory(id);
         }
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const slug = formData.slug || formData.title.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
+        const dataPayload = { ...formData, slug };
+
+        if (modalMode === 'create') {
+            await addCategory(dataPayload);
+        } else {
+            await updateCategory(editingId, dataPayload);
+        }
+        setIsModalOpen(false);
     };
 
     if (loading) {
@@ -51,7 +81,7 @@ export default function CategoriesPage() {
                         className="w-48 md:w-64"
                     />
                     <Button
-                        onClick={() => setIsAdding(true)}
+                        onClick={openCreateModal}
                         icon={Plus}
                     >
                         New Tier
@@ -69,9 +99,21 @@ export default function CategoriesPage() {
                                 <div className="w-14 h-14 rounded-2xl bg-[#d3d3d3]/20 flex items-center justify-center text-[#0a4019] shadow-inner">
                                     <Layers size={24} />
                                 </div>
-                                <div className="flex gap-1">
-                                    <button className="p-2 text-neutral-300 hover:text-[#0a4019] transition-colors"><Edit2 size={16} /></button>
-                                    <button className="p-2 text-neutral-300 hover:text-red-500 transition-colors"><Trash2 size={16} /></button>
+                                <div className="flex gap-1 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <button
+                                        onClick={() => openEditModal(category)}
+                                        className="p-2 text-neutral-300 hover:text-[#0a4019] transition-colors"
+                                        title="Edit Collection"
+                                    >
+                                        <Edit2 size={16} />
+                                    </button>
+                                    <button
+                                        onClick={() => handleDelete(category._id)}
+                                        className="p-2 text-neutral-300 hover:text-red-500 transition-colors"
+                                        title="Delete Collection"
+                                    >
+                                        <Trash2 size={16} />
+                                    </button>
                                 </div>
                             </div>
 
@@ -100,34 +142,36 @@ export default function CategoriesPage() {
                 )}
             </div>
 
-            {/* Addition Modal */}
-            {isAdding && (
+            {/* Shared Modal for Create/Edit */}
+            {isModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0a4019]/30 backdrop-blur-xl animate-fadeIn">
                     <div className="bg-white p-12 rounded-[3.5rem] shadow-[0_16px_60px_rgba(11,47,38,0.15)] max-w-lg w-full mx-4 animate-scaleIn border border-white">
                         <div className="flex items-center justify-between mb-10">
                             <div>
-                                <h3 className="text-3xl font-heading font-bold text-[#0a4019] italic">New Collection</h3>
+                                <h3 className="text-3xl font-heading font-bold text-[#0a4019] italic">
+                                    {modalMode === 'create' ? 'New Collection' : 'Edit Collection'}
+                                </h3>
                                 <p className="text-xs text-neutral-400 font-bold uppercase tracking-widest mt-1">Expanding the Taxonomy</p>
                             </div>
-                            <button onClick={() => setIsAdding(false)} className="p-2 hover:bg-neutral-100 rounded-full transition-colors text-neutral-300">
+                            <button onClick={() => setIsModalOpen(false)} className="p-2 hover:bg-neutral-100 rounded-full transition-colors text-neutral-300">
                                 <X size={24} />
                             </button>
                         </div>
 
-                        <form onSubmit={handleSave} className="space-y-6">
+                        <form onSubmit={handleSubmit} className="space-y-6">
                             <div>
                                 <Input
                                     label="Collection Title *"
                                     required
-                                    value={newCat.title}
-                                    onChange={(e) => setNewCat({ ...newCat, title: e.target.value })}
+                                    value={formData.title}
+                                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                                     placeholder="e.g. Rare Elixirs"
                                 />
 
                                 <Input
                                     label="Slug (URL Route)"
-                                    value={newCat.slug}
-                                    onChange={(e) => setNewCat({ ...newCat, slug: e.target.value })}
+                                    value={formData.slug}
+                                    onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
                                     placeholder="rare-elixirs"
                                 />
                             </div>
@@ -135,8 +179,8 @@ export default function CategoriesPage() {
                             <div>
                                 <label className="block text-[10px] font-bold text-[#0a4019] uppercase tracking-[0.2em] mb-2 ml-1">Curator Notes</label>
                                 <textarea
-                                    value={newCat.description}
-                                    onChange={(e) => setNewCat({ ...newCat, description: e.target.value })}
+                                    value={formData.description}
+                                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                                     className="w-full px-6 py-4 bg-white border border-[#F5F3F0] rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#d3d3d3]/30 focus:border-[#d3d3d3] transition-all duration-300 shadow-sm hover:shadow-md font-medium text-[#0a4019] text-sm min-h-[100px]"
                                     placeholder="Describe the essence of this collection..."
                                 />
@@ -145,7 +189,7 @@ export default function CategoriesPage() {
                             <div className="pt-6 flex gap-4">
                                 <Button
                                     type="button"
-                                    onClick={() => setIsAdding(false)}
+                                    onClick={() => setIsModalOpen(false)}
                                     variant="ghost"
                                     className="flex-1"
                                 >
@@ -156,7 +200,7 @@ export default function CategoriesPage() {
                                     variant="primary"
                                     className="flex-1"
                                 >
-                                    Save Collection
+                                    {modalMode === 'create' ? 'Save Collection' : 'Update Collection'}
                                 </Button>
                             </div>
                         </form>
